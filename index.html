@@ -76,6 +76,9 @@
   var clamp = function(v,a,b){ return Math.max(a, Math.min(b, v)); };
   var lerp  = function(a,b,t){ return a + (b-a)*t; };
   var sm    = function(t){ t = clamp(t,0,1); return t*t*(3-2*t); };
+  /* gentle ease: half linear + half smoothstep, so motion never fully stops between steps */
+  var soft  = function(t){ t = clamp(t,0,1); return 0.5*t + 0.5*t*t*(3-2*t); };
+  var easeOutBack = function(t){ t = clamp(t,0,1); var c1 = 1.5, c3 = c1+1; return 1 + c3*Math.pow(t-1,3) + c1*Math.pow(t-1,2); };
 
   var stage = $('stage'), canvas = $('c');
   var renderer;
@@ -108,8 +111,8 @@
   }
 
   /* ---------------- lights ---------------- */
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6bff, 0.85));
-  var sun = new THREE.DirectionalLight(0xffffff, 0.75);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6bff, 0.8));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.8);
   sun.position.set(110, 300, 260);
   sun.target.position.set(180, 40, 20);
   sun.castShadow = true;
@@ -119,6 +122,11 @@
   sun.shadow.camera.near = 50;   sun.shadow.camera.far = 900;
   sun.shadow.bias = -0.0006;
   scene.add(sun); scene.add(sun.target);
+  /* soft cyan rim light from behind gives the figure a polished edge */
+  var rim = new THREE.DirectionalLight(0x9fe8ff, 0.45);
+  rim.position.set(300, 160, -240);
+  rim.target.position.set(180, 60, 0);
+  scene.add(rim); scene.add(rim.target);
 
   /* ---------------- floor ---------------- */
   var slab = new THREE.Mesh(new THREE.BoxGeometry(330, 3, 138),
@@ -220,8 +228,9 @@
   var hair = new THREE.Mesh(new THREE.SphereGeometry(6.6, 20, 14, 0, Math.PI*2, 0, Math.PI*0.56), hairM);
   hair.scale.set(0.98, 1.12, 0.94); hair.position.set(-0.4, 0.3, 0); hair.rotation.z = 0.42; hair.castShadow = true;
   head.add(hair);
+  var eyes = [];
   [-1, 1].forEach(function(s){
-    var eye = sph(0.78, eyeM); eye.position.set(5.45, 0.9, s*2.2); head.add(eye);
+    var eye = sph(0.78, eyeM); eye.position.set(5.45, 0.9, s*2.2); head.add(eye); eyes.push(eye);
     var brow = box(0.5, 0.55, 2.4, hairM); brow.position.set(5.3, 2.5, s*2.2); head.add(brow);
     var ear = sph(1.4, skinD); ear.position.set(-0.6, -0.2, s*5.7); head.add(ear);
   });
@@ -281,9 +290,43 @@
   var band = box(3.4, 6.9, 2.4, bandM); armB.item.add(band);
   bodyMats.push(greenM, noteMat);
 
+  /* ---------------- confetti burst at the top ---------------- */
+  var CONF_AT = 1.3, CONF_LIFE = 2.2, CONF_G = 100;
+  var confGeo = new THREE.PlaneGeometry(3.2, 2.2);
+  var confColours = [0xFF4D6D, 0xFFD60A, 0x3DDC84, 0x4CC9F0, 0xFF9F1C, 0xffffff];
+  var confMats = confColours.map(function(c){ return new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide }); });
+  var seed = 7;
+  function rnd(){ seed = (seed*16807) % 2147483647; return (seed - 1)/2147483646; }
+  var confetti = [];
+  for (var ci = 0; ci < 56; ci++){
+    var cm = new THREE.Mesh(confGeo, confMats[ci % confMats.length]);
+    cm.visible = false; scene.add(cm);
+    confetti.push({
+      m: cm,
+      vx: (rnd()-0.5)*120, vy: 50 + rnd()*60, vz: (rnd()-0.5)*80,
+      r1: (rnd()-0.5)*14, r2: (rnd()-0.5)*14, r3: (rnd()-0.5)*14,
+      d: rnd()*0.35, sz: 0.8 + rnd()*0.7
+    });
+  }
+  function updateConfetti(c){
+    var base = c - CONF_AT;
+    for (var q = 0; q < confetti.length; q++){
+      var p = confetti[q], tau = base - p.d;
+      if (tau < 0 || tau > CONF_LIFE){ p.m.visible = false; continue; }
+      p.m.visible = true;
+      p.m.position.set(CXF_ + p.vx*tau, 152 + p.vy*tau - 0.5*CONF_G*tau*tau, p.vz*tau);
+      p.m.rotation.set(p.r1*tau, p.r2*tau, p.r3*tau);
+      var s = tau > CONF_LIFE*0.7 ? 1 - (tau - CONF_LIFE*0.7)/(CONF_LIFE*0.3) : 1;
+      p.m.scale.setScalar(Math.max(0.001, s)*p.sz);
+    }
+  }
+  var CXF_ = 312.5;
+
   /* ---------------- timeline ---------------- */
-  var TS = 0.85, IDLE = 0.8, N = 21;
-  var TCLIMB = IDLE + N*TS, HOLD = 7.5, LOOP = TCLIMB + HOLD + 0.9;
+  /* faster, steadier pace: 0.4s per footfall (was 0.85s) */
+  var TS = 0.4, IDLE = 0.3, N = 21;
+  var TCLIMB = IDLE + N*TS, HOLD = 4.5, LOOP = TCLIMB + HOLD + 0.7;
+  var CS = 1.35;                     /* celebration plays 35% faster */
 
   function X(n){ return 5 + 15*n; }   /* foot-fall positions: heel and toe stay on the tread */
   function Hg(x){
@@ -311,7 +354,7 @@
   }
 
   var AB = 2.5, BE = 0.5;            /* arms-up angles: V shape, hands above the head */
-  var CXF = 312.5;                   /* where he stands at the top */
+  var CXF = CXF_;                    /* where he stands at the top */
   var BAG_L = 0.04;                  /* lean when the bag leaves */
   var bagStart = {
     x: CXF + 8.8*Math.sin(BAG_L) - 8.6*Math.cos(BAG_L),
@@ -328,8 +371,8 @@
 
   function renderStudent(t){
     var fig = 1;
-    if (t < 0.5) fig = t/0.5;
-    if (t > TCLIMB + HOLD) fig = clamp(1 - (t - TCLIMB - HOLD)/0.7, 0, 1);
+    if (t < 0.3) fig = t/0.3;
+    if (t > TCLIMB + HOLD) fig = clamp(1 - (t - TCLIMB - HOLD)/0.5, 0, 1);
 
     var tt = clamp(t - IDLE, 0, N*TS);
     var i = Math.min(N, Math.floor(tt/TS) + 1);
@@ -337,45 +380,49 @@
     var xa = X(i-2), xb = X(i-1), xc = X(i);
     var Ha = Hg(xa), Hb = Hg(xb), Hc = Hg(xc);
 
-    var swx = lerp(xa, xc, sm((u - 0.12)/0.88));   /* lift first, then move forward */
-    var swBase = lerp(Ha, Hc, sm(u/0.4));
+    var swx = lerp(xa, xc, soft((u - 0.1)/0.9));   /* lift first, then move forward */
+    var swBase = lerp(Ha, Hc, soft(u/0.5));
     var swy = swBase + (Hc > Ha ? 8 : 4.5)*Math.sin(Math.PI*u);
     var aSw = (i % 2 === 1);
     var A = aSw ? {x: swx, y: swy} : {x: xb, y: Hb};
     var B = aSw ? {x: xb, y: Hb}   : {x: swx, y: swy};
 
+    /* hips glide forward at constant speed, with a small natural bob */
     var hx = lerp((xa+xb)/2, (xb+xc)/2, u);
-    var hy = lerp(Ha, Hb, sm(u)) + HH + 0.8*Math.sin(Math.PI*u);
-    var lean = 0.04 + 0.04*Math.sin(Math.PI*u);
+    var hy = lerp(Ha, Hb, soft(u)) + HH + 0.9*Math.sin(Math.PI*u);
+    var lean = 0.05 + 0.03*Math.sin(Math.PI*u);
     var tiltA = aSw ? 0.28*Math.sin(Math.PI*u) : 0;
     var tiltB = aSw ? 0 : 0.28*Math.sin(Math.PI*u);
 
-    var c = t - TCLIMB;
-    var turn = 0, ampl = 1, kArm = 0, capOff = 40, capOn = false, hop = 0, wob = 0;
+    var c = (t - TCLIMB) * CS;
+    var turn = 0, ampl = 1, kArm = 0, kOver = 0, capOff = 40, capOn = false, hop = 0, wob = 0;
     if (c > 0){
-      var s = sm(c/0.9);
+      var s = sm(c/0.7);
       A = { x: lerp(A.x, CXF, s), y: A.y };
       B = { x: lerp(B.x, CXF, s), y: B.y };
       hy += 0.8*s;
       lean *= (1 - s);
       turn = s;
-      ampl = 1 - sm(c/0.5);
-      kArm = sm((c - 0.9)/0.6);
-      if (c >= 1.5){
+      ampl = 1 - sm(c/0.4);
+      kArm = sm((c - 0.7)/0.5);
+      kOver = easeOutBack((c - 0.7)/0.6);   /* arms overshoot slightly, then settle */
+      if (c >= 1.2){
         capOn = true;
-        var p = clamp((c - 1.5)/0.45, 0, 1);
+        var p = clamp((c - 1.2)/0.35, 0, 1);
         capOff = 40*(1 - sm(p));
-        if (p >= 1){ var q2 = c - 1.95; capOff = 1.6*Math.exp(-q2*9)*Math.sin(q2*26) ; }
+        if (p >= 1){ var q2 = c - 1.55; capOff = 1.8*Math.exp(-q2*9)*Math.sin(q2*26); }
       }
-      if (c >= 2.3 && c < 2.8) hop = 7*Math.sin(Math.PI*(c - 2.3)/0.5);
-      if (c >= 3.0 && c < 3.5) hop = 7*Math.sin(Math.PI*(c - 3.0)/0.5);
-      if (c > 1.5) wob = Math.sin(c*6.5);
+      if (c >= 1.9 && c < 2.3) hop = 7*Math.sin(Math.PI*(c - 1.9)/0.4);
+      if (c >= 2.5 && c < 2.9) hop = 7*Math.sin(Math.PI*(c - 2.5)/0.4);
+      if (c > 1.4) wob = Math.sin(c*8);
     }
     hy += hop;
 
     rig.position.set(hx, hy, 0);
     rig.rotation.y = -Math.PI/2 * turn;
     torso.rotation.z = -lean;
+    /* shoulders twist against the hips while walking */
+    torso.rotation.y = 0.09*Math.sin(Math.PI*u)*(aSw ? 1 : -1)*ampl;
 
     setLeg(legA, hx, hy, A.x, A.y, tiltA);
     setLeg(legB, hx, hy, B.x, B.y, tiltB);
@@ -383,88 +430,17 @@
     var phase = clamp((A.x - B.x)/15, -1.3, 1.3);
     var thN = -0.5*phase*ampl, thF = 0.5*phase*ampl;
     var fN = (0.2 + 0.35*Math.max(0, thN))*ampl, fF = (0.2 + 0.35*Math.max(0, thF))*ampl;
-    setArm(armA, thN, fN*(1-kArm), AB*kArm, BE*kArm + 0.12*wob*kArm);
-    setArm(armB, thF, fF*(1-kArm), AB*kArm, BE*kArm - 0.12*wob*kArm);
+    setArm(armA, thN, fN*(1-kArm), AB*kOver, BE*kOver + 0.12*wob*kArm);
+    setArm(armB, thF, fF*(1-kArm), AB*kOver, BE*kOver - 0.12*wob*kArm);
 
     var itemOn = kArm > 0.02;
     armA.item.visible = itemOn; armB.item.visible = itemOn;
     var isc = clamp(kArm*3, 0.001, 1);
     armA.item.scale.setScalar(isc); armB.item.scale.setScalar(isc);
-    armA.item.rotation.set(armA.side*(AB*kArm + BE*kArm), 0, 0);
-    armB.item.rotation.set(armB.side*(AB*kArm + BE*kArm), 0, 0);
+    armA.item.rotation.set(armA.side*(AB + BE)*kOver, 0, 0);
+    armB.item.rotation.set(armB.side*(AB + BE)*kOver, 0, 0);
 
     capG.visible = capOn;
     capG.position.y = capOff;
 
-    /* school bag: on the back while climbing, drops away at the top */
-    var bo = 1;
-    if (c < 0){
-      if (bag.parent !== torso){ torso.add(bag); bag.position.set(-8.6, 8.8, 0); bag.rotation.set(0,0,0); }
-      bag.visible = true;
-    } else {
-      if (bag.parent !== scene){ scene.add(bag); }
-      var tc = Math.min(c, tLand);
-      bag.position.set(bagStart.x + VX*tc, bagStart.y + VY*tc - 0.5*G*tc*tc, 0);
-      bag.rotation.set(0.25*tc, 0, -BAG_L + 4.2*tc);
-      bo = 1 - clamp((c - tLand - 0.5)/0.6, 0, 1);
-      bag.visible = bo > 0;
-    }
-
-    setOpacity(bodyMats, fig);
-    setOpacity(bagMats, bo*fig);
-    rig.visible = fig > 0.001;
-    bag.visible = bag.visible && fig > 0.001;
-  }
-
-  /* ---------------- camera, fit, interaction ---------------- */
-  var TARGET = new THREE.Vector3(180, 64, 40);
-  var EL = 0.5, AZ0 = -0.3, SWAY = 0.11;
-  var fitPts = [];
-  [[30,0,-23],[330,0,-23],[30,0,23],[330,0,23],[330,90,-23],[330,90,23],
-   [30,0,102],[330,0,102],
-   [312,182,0],[292,182,0],[333,182,0],[312,0,0]].forEach(function(p){ fitPts.push(new THREE.Vector3(p[0],p[1],p[2])); });
-
-  function place(az, R){
-    camera.position.set(
-      TARGET.x + R*Math.sin(az)*Math.cos(EL),
-      TARGET.y + R*Math.sin(EL),
-      TARGET.z + R*Math.cos(az)*Math.cos(EL));
-    camera.lookAt(TARGET);
-    camera.updateMatrixWorld(true);
-  }
-  var baseR = 700;
-  function fit(){
-    var worst = 0, v = new THREE.Vector3();
-    var azs = [AZ0 - SWAY - 0.06, AZ0, AZ0 + SWAY + 0.06];
-    for (var a = 0; a < azs.length; a++){
-      for (var R = 250; R < 2200; R += 8){
-        place(azs[a], R);
-        var ok = true;
-        for (var q = 0; q < fitPts.length; q++){
-          v.copy(fitPts[q]).project(camera);
-          if (Math.abs(v.x) > 0.95 || Math.abs(v.y) > 0.95){ ok = false; break; }
-        }
-        if (ok){ worst = Math.max(worst, R); break; }
-      }
-    }
-    baseR = worst || 700;
-  }
-
-  function resize(){
-    var w = stage.clientWidth || 360;
-    var h = Math.round(w / 1.12);
-    stage.style.height = h + 'px';
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    fit();
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  var dragAz = 0, dragging = false, lastX = 0;
-  canvas.addEventListener('pointerdown', function(e){
-    dragging = true; lastX = e.clientX;
-    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
-  });
-  canvas.addEventListener('pointermove', func
+    /* head: slight nod while c
