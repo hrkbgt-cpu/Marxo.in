@@ -22,10 +22,11 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:24px 16px;
+    padding:24px 12px;
     text-align:center;
+    overflow-x:hidden;
   }
-  main{width:100%;max-width:560px}
+  main{width:100%;max-width:600px}
   .welcome{font-weight:600;font-size:1.2rem;letter-spacing:.02em;opacity:.95}
   h1{
     font-weight:800;
@@ -34,12 +35,16 @@
     letter-spacing:-.02em;
     color:#FFD60A;
     text-shadow:0 5px 0 rgba(20,0,60,.35);
-    margin-bottom:6px;
+    margin-bottom:2px;
   }
-  svg{display:block;width:100%;height:auto;margin:0 auto}
+  #stage{position:relative;width:100%;height:440px}
+  #c{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+  #c:active{cursor:grabbing}
+  #fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+    padding:20px;font-weight:600;line-height:1.5}
   .soon{
     display:inline-block;
-    margin-top:14px;
+    margin-top:6px;
     font-weight:800;
     font-size:1.1rem;
     color:#7209B7;
@@ -48,127 +53,418 @@
     padding:8px 26px;
     box-shadow:0 5px 0 rgba(20,0,60,.3);
   }
-
-  .step{transform-box:fill-box;transform-origin:bottom;animation:rise .5s ease-out both}
-  .s1{animation-delay:.05s}.s2{animation-delay:.15s}.s3{animation-delay:.25s}
-  .s4{animation-delay:.35s}.s5{animation-delay:.45s}
-  @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-
-  .student{animation:climb 12s linear infinite}
-  @keyframes climb{
-    0%,4%   {transform:translate(12px,200px);opacity:1}
-    12%     {transform:translate(60px,166px)}
-    15%     {transform:translate(60px,166px)}
-    23%     {transform:translate(120px,142px)}
-    26%     {transform:translate(120px,142px)}
-    34%     {transform:translate(180px,118px)}
-    37%     {transform:translate(180px,118px)}
-    45%     {transform:translate(240px,94px)}
-    48%     {transform:translate(240px,94px)}
-    56%     {transform:translate(300px,70px);opacity:1}
-    93%     {transform:translate(300px,70px);opacity:1}
-    97%     {transform:translate(300px,70px);opacity:0}
-    97.01%  {transform:translate(12px,200px);opacity:0}
-    100%    {transform:translate(12px,200px);opacity:1}
-  }
-  .hop{animation:hop 12s linear infinite}
-  @keyframes hop{
-    0%,64%{transform:translateY(0)}
-    68%{transform:translateY(-6px)}
-    72%{transform:translateY(0)}
-    76%{transform:translateY(-6px)}
-    80%,100%{transform:translateY(0)}
-  }
-  .cap{animation:cap 12s linear infinite}
-  @keyframes cap{
-    0%,57%{opacity:0;transform:translateY(-22px)}
-    63%,93%{opacity:1;transform:translateY(0)}
-    97%,100%{opacity:0;transform:translateY(0)}
-  }
-  .raised{animation:raised 12s linear infinite}
-  @keyframes raised{
-    0%,64%{opacity:0}
-    66%,93%{opacity:1}
-    97%,100%{opacity:0}
-  }
-  .lowered{animation:lowered 12s linear infinite}
-  @keyframes lowered{
-    0%,64%{opacity:1}
-    66%,97%{opacity:0}
-    97.01%,100%{opacity:1}
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    .step,.hop,.cap,.raised,.lowered{animation:none}
-    .student{animation:none;transform:translate(300px,70px)}
-    .cap,.raised{opacity:1}
-    .lowered{opacity:0}
-  }
 </style>
 </head>
 <body>
 <main>
   <p class="welcome">Welcome to</p>
   <h1>Marxo</h1>
-
-  <svg viewBox="0 0 340 250" role="img" aria-label="A student with a school bag climbs five colourful steps and receives a cap and a degree at the top">
-    <!-- ground -->
-    <rect x="0" y="200" width="340" height="4" rx="2" fill="rgba(255,255,255,.45)"/>
-
-    <!-- colourful stairs -->
-    <rect class="step s1" x="30"  y="166" width="60" height="34"  rx="4" fill="#FF4D6D"/>
-    <rect class="step s2" x="90"  y="142" width="60" height="58"  rx="4" fill="#FF9F1C"/>
-    <rect class="step s3" x="150" y="118" width="60" height="82"  rx="4" fill="#FFD60A"/>
-    <rect class="step s4" x="210" y="94"  width="60" height="106" rx="4" fill="#3DDC84"/>
-    <rect class="step s5" x="270" y="70"  width="60" height="130" rx="4" fill="#4CC9F0"/>
-
-    <!-- Step by Step across the full length of the stairs -->
-    <text x="30" y="236" textLength="300" lengthAdjust="spacingAndGlyphs"
-          font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="32"
-          fill="#fff">Step by Step</text>
-
-    <!-- student: feet at (0,0) -->
-    <g class="student">
-      <g class="hop">
-        <!-- legs -->
-        <rect x="-5" y="-14" width="4.5" height="14" rx="2" fill="#1B1464"/>
-        <rect x="1"  y="-14" width="4.5" height="14" rx="2" fill="#1B1464"/>
-        <!-- school bag on the back -->
-        <rect x="-14" y="-30" width="9" height="17" rx="3.5" fill="#FF3D00"/>
-        <rect x="-12.5" y="-26" width="6" height="4" rx="1.5" fill="#FFB199"/>
-        <!-- body -->
-        <rect x="-7" y="-31" width="14" height="18" rx="3.5" fill="#fff"/>
-        <line x1="-6" y1="-29" x2="-6" y2="-15" stroke="#FF3D00" stroke-width="2"/>
-        <!-- head -->
-        <circle cx="0" cy="-38" r="7" fill="#F1C27D"/>
-        <path d="M-7.2 -39 a7.2 7.2 0 0 1 14.4 0 q-7 -4 -14.4 0z" fill="#2B1B17"/>
-        <circle cx="3" cy="-37.5" r="1" fill="#2B1B17"/>
-        <!-- arm down -->
-        <g class="lowered">
-          <line x1="5" y1="-28" x2="10" y2="-19" stroke="#F1C27D" stroke-width="3.6" stroke-linecap="round"/>
-        </g>
-        <!-- arm raised holding degree -->
-        <g class="raised">
-          <line x1="5" y1="-28" x2="13" y2="-42" stroke="#F1C27D" stroke-width="3.6" stroke-linecap="round"/>
-          <g transform="translate(13 -44) rotate(-35)">
-            <rect x="-9" y="-3.5" width="18" height="7" rx="3.5" fill="#FFF4D6" stroke="#E0B84C" stroke-width="1"/>
-            <rect x="-1.5" y="-3.5" width="3" height="7" fill="#D62839"/>
-          </g>
-        </g>
-        <!-- graduation cap -->
-        <g class="cap">
-          <g transform="translate(0 -44)">
-            <rect x="-6" y="0" width="12" height="5" rx="1.5" fill="#111"/>
-            <polygon points="-12,0 0,-5.5 12,0 0,5.5" fill="#1d1d1d"/>
-            <line x1="10" y1="0.5" x2="10" y2="8" stroke="#FFD60A" stroke-width="1.4"/>
-            <circle cx="10" cy="9" r="1.6" fill="#FFD60A"/>
-          </g>
-        </g>
-      </g>
-    </g>
-  </svg>
-
+  <div id="stage">
+    <canvas id="c" aria-label="3D scene: a student walks up colourful stairs, turns to face you, drops his school bag and raises a degree and money"></canvas>
+    <div id="fallback">3D दृश्य दिखाने के लिए इंटरनेट और WebGL वाला ब्राउज़र चाहिए।</div>
+  </div>
   <span class="soon">Coming Soon</span>
 </main>
-</body>
-</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function showFallback(){ $('fallback').style.display = 'flex'; $('c').style.display = 'none'; }
+  if (typeof THREE === 'undefined'){ showFallback(); return; }
+
+  var clamp = function(v,a,b){ return Math.max(a, Math.min(b, v)); };
+  var lerp  = function(a,b,t){ return a + (b-a)*t; };
+  var sm    = function(t){ t = clamp(t,0,1); return t*t*(3-2*t); };
+
+  var stage = $('stage'), canvas = $('c');
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+  } catch (e){ showFallback(); return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0x000000, 0);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(30, 1.4, 10, 4000);
+
+  /* ---------------- helpers ---------------- */
+  function M(color, rough){
+    return new THREE.MeshStandardMaterial({ color: color, roughness: rough == null ? 0.75 : rough, metalness: 0 });
+  }
+  function cyl(rt, rb, h, mat, seg){
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 18), mat);
+    m.castShadow = true; return m;
+  }
+  function sph(r, mat, sx, sy, sz){
+    var m = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), mat);
+    m.scale.set(sx || 1, sy || 1, sz || 1); m.castShadow = true; return m;
+  }
+  function box(w, h, d, mat){
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.castShadow = true; return m;
+  }
+
+  /* ---------------- lights ---------------- */
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a6bff, 0.85));
+  var sun = new THREE.DirectionalLight(0xffffff, 0.75);
+  sun.position.set(110, 300, 260);
+  sun.target.position.set(180, 40, 20);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -240; sun.shadow.camera.right = 240;
+  sun.shadow.camera.top = 220;   sun.shadow.camera.bottom = -140;
+  sun.shadow.camera.near = 50;   sun.shadow.camera.far = 900;
+  sun.shadow.bias = -0.0006;
+  scene.add(sun); scene.add(sun.target);
+
+  /* ---------------- floor ---------------- */
+  var slab = new THREE.Mesh(new THREE.BoxGeometry(330, 3, 138),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.16, depthWrite: false }));
+  slab.position.set(180, -1.5, 39);
+  scene.add(slab);
+  var shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(700, 400),
+    new THREE.ShadowMaterial({ opacity: 0.28 }));
+  shadowPlane.rotation.x = -Math.PI/2; shadowPlane.position.set(180, 0.05, 40);
+  shadowPlane.receiveShadow = true;
+  scene.add(shadowPlane);
+
+  /* ---------------- stairs: 5 colours x 2 low steps ---------------- */
+  var colours = [0xFF4D6D, 0xFF9F1C, 0xFFD60A, 0x3DDC84, 0x4CC9F0];
+  var stairMeshes = [];
+  var edgeMat = new THREE.LineBasicMaterial({ color: 0x14003c, transparent: true, opacity: 0.28 });
+  for (var k = 1; k <= 10; k++){
+    var g = new THREE.BoxGeometry(30, 9*k, 46);
+    g.translate(0, 4.5*k, 0);
+    var st = new THREE.Mesh(g, M(colours[Math.ceil(k/2)-1], 0.55));
+    st.position.set(30 + 30*(k-1) + 15, 0, 0);
+    st.castShadow = true; st.receiveShadow = true;
+    st.add(new THREE.LineSegments(new THREE.EdgesGeometry(g), edgeMat));
+    scene.add(st);
+    stairMeshes.push(st);
+  }
+
+  /* ---------------- "Step by Step" painted along the full length ---------------- */
+  var signCanvas = document.createElement('canvas');
+  var SIGN_W = 2048, SIGN_D = 72, SIGN_H = Math.round(SIGN_W * SIGN_D / 300);
+  signCanvas.width = SIGN_W; signCanvas.height = SIGN_H;
+  var signTex = new THREE.CanvasTexture(signCanvas);
+  signTex.anisotropy = 8;
+  function drawSign(){
+    var cx = signCanvas.getContext('2d');
+    cx.clearRect(0, 0, SIGN_W, SIGN_H);
+    cx.font = '800 280px Poppins, "Segoe UI", Arial, sans-serif';
+    var w = cx.measureText('Step by Step').width || 1800;
+    cx.save();
+    cx.translate(SIGN_W/2, SIGN_H/2);
+    cx.scale((SIGN_W - 50)/w, 1.3);
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillStyle = '#ffffff';
+    cx.fillText('Step by Step', 0, 8);
+    cx.restore();
+    signTex.needsUpdate = true;
+  }
+  drawSign();
+  if (document.fonts && document.fonts.load){
+    document.fonts.load('800 100px Poppins').then(drawSign, drawSign);
+  }
+  var sign = new THREE.Mesh(new THREE.PlaneGeometry(300, SIGN_D),
+    new THREE.MeshBasicMaterial({ map: signTex, transparent: true, depthWrite: false }));
+  sign.rotation.x = -Math.PI/2; sign.position.set(180, 0.3, 30 + SIGN_D/2);
+  scene.add(sign);
+
+  /* ---------------- the student ---------------- */
+  var L1 = 16, L2 = 16, ANK = 3.6, HH = 34.6, UA = 10.6, UF = 10;
+  var skin = M(0xE0AC82, .8), skinD = M(0xC99A73, .8), shirt = M(0xffffff, .8), pants = M(0x22305f, .85),
+      shoeM = M(0x161616, .6), soleM = M(0xe8e8e8, .7), hairM = M(0x1F1410, .9), eyeM = M(0x20120d, .5),
+      tieM = M(0xC0392B, .7), goldM = M(0xFFD60A, .4), capM = M(0x141414, .7),
+      paperM = M(0xFFF4D6, .8), ribbonM = M(0xD62839, .6), bandM = M(0xFFD60A, .5);
+  var bagRed = M(0xB3261E, .7), bagDark = M(0x7A1812, .7);
+  var bodyMats = [skin, skinD, shirt, pants, shoeM, soleM, hairM, eyeM, tieM, goldM, capM, paperM, ribbonM, bandM];
+  var bagMats = [bagRed, bagDark];
+
+  var rig = new THREE.Group(); scene.add(rig);
+
+  var pelvis = sph(5.6, pants, 0.9, 0.85, 1.25); rig.add(pelvis);
+
+  function makeLeg(zOff){
+    var th = new THREE.Group(); th.position.set(0, 0, zOff); rig.add(th);
+    var t = cyl(3.7, 3.0, L1, pants); t.position.y = -L1/2; th.add(t);
+    var kn = sph(3.05, pants); kn.position.y = -L1; th.add(kn);
+    var sh = new THREE.Group(); sh.position.y = -L1; th.add(sh);
+    var s = cyl(2.9, 2.3, L2, pants); s.position.y = -L2/2; sh.add(s);
+    var an = sph(2.3, pants); an.position.y = -L2; sh.add(an);
+    var ft = new THREE.Group(); ft.position.y = -L2; sh.add(ft);
+    var shoe = box(11, 3.0, 5.2, shoeM); shoe.position.set(2.6, -1.9, 0); ft.add(shoe);
+    var toe = sph(2.6, shoeM, 1, .6, 1); toe.position.set(7.6, -1.9, 0); ft.add(toe);
+    var sole = box(11.4, 0.7, 5.4, soleM); sole.position.set(2.7, -3.25, 0); ft.add(sole);
+    return { th: th, sh: sh, ft: ft };
+  }
+  var legA = makeLeg(3.8), legB = makeLeg(-3.8);
+
+  var torso = new THREE.Group(); rig.add(torso);
+  var tMesh = cyl(7.0, 6.4, 16, shirt, 24); tMesh.scale.set(0.64, 1, 1); tMesh.position.y = 8.6; torso.add(tMesh);
+  var belt = cyl(6.55, 6.55, 1.8, pants, 24); belt.scale.set(0.67, 1, 1.0); belt.position.y = 1.4; torso.add(belt);
+  var tie = box(0.6, 8, 2.1, tieM); tie.position.set(4.55, 10, 0); torso.add(tie);
+  [-1, 1].forEach(function(s){
+    var sp = box(0.8, 14.5, 2, bagDark); sp.position.set(4.6, 9.4, s*4.5); torso.add(sp);
+    var sp2 = box(9.6, 0.8, 2, bagDark); sp2.position.set(0, 16.3, s*4.5); torso.add(sp2);
+    var sj = sph(3.1, shirt); sj.position.set(0, 14.6, s*7.3); torso.add(sj);
+  });
+  var neck = cyl(2.0, 2.2, 3.4, skinD); neck.position.y = 17.6; torso.add(neck);
+
+  var head = new THREE.Group(); head.position.y = 23.8; torso.add(head);
+  head.add(sph(6.2, skin, 0.95, 1.1, 0.9));
+  var hair = new THREE.Mesh(new THREE.SphereGeometry(6.6, 20, 14, 0, Math.PI*2, 0, Math.PI*0.56), hairM);
+  hair.scale.set(0.98, 1.12, 0.94); hair.position.set(-0.4, 0.3, 0); hair.rotation.z = 0.42; hair.castShadow = true;
+  head.add(hair);
+  [-1, 1].forEach(function(s){
+    var eye = sph(0.78, eyeM); eye.position.set(5.45, 0.9, s*2.2); head.add(eye);
+    var brow = box(0.5, 0.55, 2.4, hairM); brow.position.set(5.3, 2.5, s*2.2); head.add(brow);
+    var ear = sph(1.4, skinD); ear.position.set(-0.6, -0.2, s*5.7); head.add(ear);
+  });
+  var nose = sph(1.15, skinD); nose.position.set(6.1, -0.8, 0); head.add(nose);
+  var mouth = box(0.4, 0.5, 2.8, M(0x8A4B3A, .6)); mouth.position.set(5.2, -3.1, 0); head.add(mouth);
+
+  /* graduation cap (hidden until the top) */
+  var capG = new THREE.Group(); head.add(capG);
+  var skull = cyl(5.3, 5.5, 3.4, capM); skull.position.y = 5.6; capG.add(skull);
+  var board = box(15.5, 0.9, 15.5, capM); board.position.y = 7.6; board.rotation.y = Math.PI/4; capG.add(board);
+  var button = sph(0.8, goldM); button.position.y = 8.3; capG.add(button);
+  var cord = cyl(0.17, 0.17, 5.6, goldM, 8); cord.position.set(0, 4.8, 10.0); capG.add(cord);
+  var tass = sph(1.05, goldM, 1, 1.4, 1); tass.position.set(0, 1.7, 10.0); capG.add(tass);
+  capG.visible = false;
+
+  /* school bag */
+  var bag = new THREE.Group();
+  var bagBody = box(8, 17, 13, bagRed); bag.add(bagBody);
+  var bagPocket = box(1.4, 7, 10, bagDark); bagPocket.position.set(-4.5, -3, 0); bag.add(bagPocket);
+  var bagFlap = box(8.4, 1.5, 13.4, bagDark); bagFlap.position.y = 8.2; bag.add(bagFlap);
+  var bagHandle = box(1.1, 1.5, 4.5, bagDark); bagHandle.position.y = 9.8; bag.add(bagHandle);
+  torso.add(bag); bag.position.set(-8.6, 8.8, 0);
+
+  /* arms + things held up */
+  function noteTexture(){
+    var cv = document.createElement('canvas'); cv.width = 256; cv.height = 128;
+    var cx = cv.getContext('2d');
+    cx.fillStyle = '#2E9E4F'; cx.fillRect(0, 0, 256, 128);
+    cx.strokeStyle = '#d9f5e0'; cx.lineWidth = 6; cx.strokeRect(8, 8, 240, 112);
+    cx.fillStyle = '#ffffff'; cx.font = '800 76px Poppins, Arial, sans-serif';
+    cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillText('\u20B9 \u20B9', 128, 68);
+    return new THREE.CanvasTexture(cv);
+  }
+  var noteMap = noteTexture();
+
+  function makeArm(side){
+    var sh = new THREE.Group(); sh.position.set(0, 14.6, side*7.3); torso.add(sh);
+    var u = cyl(2.7, 2.3, UA, shirt); u.position.y = -UA/2; sh.add(u);
+    var el = new THREE.Group(); el.position.y = -UA; sh.add(el);
+    var ej = sph(2.35, shirt); el.add(ej);
+    var f = cyl(2.0, 1.7, UF, skin); f.position.y = -UF/2; el.add(f);
+    var h = sph(2.25, skin, 1, 1.1, 0.9); h.position.y = -UF; el.add(h);
+    var item = new THREE.Group(); item.position.y = -UF - 1.2; item.visible = false; el.add(item);
+    return { side: side, sh: sh, el: el, item: item };
+  }
+  var armA = makeArm(1), armB = makeArm(-1);   /* armA: degree, armB: money */
+
+  var scroll = cyl(1.5, 1.5, 13, paperM, 14); scroll.rotation.x = Math.PI/2; armA.item.add(scroll);
+  var ribbon = cyl(1.75, 1.75, 2.4, ribbonM, 14); ribbon.rotation.x = Math.PI/2; armA.item.add(ribbon);
+
+  var greenM = M(0x2E9E4F, .7);
+  var noteMat = new THREE.MeshStandardMaterial({ map: noteMap, roughness: .7, metalness: 0 });
+  var money = new THREE.Mesh(new THREE.BoxGeometry(3, 6.5, 12),
+    [noteMat, greenM, greenM, greenM, greenM, greenM]);
+  money.castShadow = true; armB.item.add(money);
+  var band = box(3.4, 6.9, 2.4, bandM); armB.item.add(band);
+  bodyMats.push(greenM, noteMat);
+
+  /* ---------------- timeline ---------------- */
+  var TS = 0.85, IDLE = 0.8, N = 21;
+  var TCLIMB = IDLE + N*TS, HOLD = 7.5, LOOP = TCLIMB + HOLD + 0.9;
+
+  function X(n){ return 5 + 15*n; }   /* foot-fall positions: heel and toe stay on the tread */
+  function Hg(x){
+    if (x < 30) return 0;
+    return 9 * Math.min(10, Math.floor((x - 30)/30) + 1);
+  }
+
+  function setLeg(leg, hx, hy, fx, fy, tilt){
+    var ax = fx - hx, ay = (fy + ANK) - hy;
+    var d = Math.sqrt(ax*ax + ay*ay), maxd = L1 + L2 - 0.05;
+    if (d > maxd){ var s = maxd/d; ax *= s; ay *= s; d = maxd; }
+    var a = Math.atan2(ay, ax);
+    var A = Math.acos(clamp((L1*L1 + d*d - L2*L2)/(2*L1*d), -1, 1));
+    var p1 = a + A;
+    var kx = L1*Math.cos(p1), ky = L1*Math.sin(p1);
+    var t1 = p1 + Math.PI/2;
+    var p2 = Math.atan2(ay - ky, ax - kx), t2 = p2 + Math.PI/2;
+    leg.th.rotation.z = t1;
+    leg.sh.rotation.z = t2 - t1;
+    leg.ft.rotation.z = tilt - t2;
+  }
+  function setArm(arm, swing, flex, abduct, bend){
+    arm.sh.rotation.set(-arm.side*abduct, 0, swing);
+    arm.el.rotation.set(-arm.side*bend, 0, flex);
+  }
+
+  var AB = 2.5, BE = 0.5;            /* arms-up angles: V shape, hands above the head */
+  var CXF = 312.5;                   /* where he stands at the top */
+  var BAG_L = 0.04;                  /* lean when the bag leaves */
+  var bagStart = {
+    x: CXF + 8.8*Math.sin(BAG_L) - 8.6*Math.cos(BAG_L),
+    y: Hg(X(20)) + HH + 8.8*Math.cos(BAG_L) + 8.6*Math.sin(BAG_L)
+  };
+  var G = 190, VX = -24, VY = 8, LAND = 85;
+  var tLand = (VY + Math.sqrt(VY*VY + 2*G*(bagStart.y - LAND)))/G;
+
+  function setOpacity(list, o){
+    for (var q = 0; q < list.length; q++){
+      list[q].opacity = o; list[q].transparent = o < 0.999;
+    }
+  }
+
+  function renderStudent(t){
+    var fig = 1;
+    if (t < 0.5) fig = t/0.5;
+    if (t > TCLIMB + HOLD) fig = clamp(1 - (t - TCLIMB - HOLD)/0.7, 0, 1);
+
+    var tt = clamp(t - IDLE, 0, N*TS);
+    var i = Math.min(N, Math.floor(tt/TS) + 1);
+    var u = clamp((tt - (i-1)*TS)/TS, 0, 1);
+    var xa = X(i-2), xb = X(i-1), xc = X(i);
+    var Ha = Hg(xa), Hb = Hg(xb), Hc = Hg(xc);
+
+    var swx = lerp(xa, xc, sm((u - 0.12)/0.88));   /* lift first, then move forward */
+    var swBase = lerp(Ha, Hc, sm(u/0.4));
+    var swy = swBase + (Hc > Ha ? 8 : 4.5)*Math.sin(Math.PI*u);
+    var aSw = (i % 2 === 1);
+    var A = aSw ? {x: swx, y: swy} : {x: xb, y: Hb};
+    var B = aSw ? {x: xb, y: Hb}   : {x: swx, y: swy};
+
+    var hx = lerp((xa+xb)/2, (xb+xc)/2, u);
+    var hy = lerp(Ha, Hb, sm(u)) + HH + 0.8*Math.sin(Math.PI*u);
+    var lean = 0.04 + 0.04*Math.sin(Math.PI*u);
+    var tiltA = aSw ? 0.28*Math.sin(Math.PI*u) : 0;
+    var tiltB = aSw ? 0 : 0.28*Math.sin(Math.PI*u);
+
+    var c = t - TCLIMB;
+    var turn = 0, ampl = 1, kArm = 0, capOff = 40, capOn = false, hop = 0, wob = 0;
+    if (c > 0){
+      var s = sm(c/0.9);
+      A = { x: lerp(A.x, CXF, s), y: A.y };
+      B = { x: lerp(B.x, CXF, s), y: B.y };
+      hy += 0.8*s;
+      lean *= (1 - s);
+      turn = s;
+      ampl = 1 - sm(c/0.5);
+      kArm = sm((c - 0.9)/0.6);
+      if (c >= 1.5){
+        capOn = true;
+        var p = clamp((c - 1.5)/0.45, 0, 1);
+        capOff = 40*(1 - sm(p));
+        if (p >= 1){ var q2 = c - 1.95; capOff = 1.6*Math.exp(-q2*9)*Math.sin(q2*26) ; }
+      }
+      if (c >= 2.3 && c < 2.8) hop = 7*Math.sin(Math.PI*(c - 2.3)/0.5);
+      if (c >= 3.0 && c < 3.5) hop = 7*Math.sin(Math.PI*(c - 3.0)/0.5);
+      if (c > 1.5) wob = Math.sin(c*6.5);
+    }
+    hy += hop;
+
+    rig.position.set(hx, hy, 0);
+    rig.rotation.y = -Math.PI/2 * turn;
+    torso.rotation.z = -lean;
+
+    setLeg(legA, hx, hy, A.x, A.y, tiltA);
+    setLeg(legB, hx, hy, B.x, B.y, tiltB);
+
+    var phase = clamp((A.x - B.x)/15, -1.3, 1.3);
+    var thN = -0.5*phase*ampl, thF = 0.5*phase*ampl;
+    var fN = (0.2 + 0.35*Math.max(0, thN))*ampl, fF = (0.2 + 0.35*Math.max(0, thF))*ampl;
+    setArm(armA, thN, fN*(1-kArm), AB*kArm, BE*kArm + 0.12*wob*kArm);
+    setArm(armB, thF, fF*(1-kArm), AB*kArm, BE*kArm - 0.12*wob*kArm);
+
+    var itemOn = kArm > 0.02;
+    armA.item.visible = itemOn; armB.item.visible = itemOn;
+    var isc = clamp(kArm*3, 0.001, 1);
+    armA.item.scale.setScalar(isc); armB.item.scale.setScalar(isc);
+    armA.item.rotation.set(armA.side*(AB*kArm + BE*kArm), 0, 0);
+    armB.item.rotation.set(armB.side*(AB*kArm + BE*kArm), 0, 0);
+
+    capG.visible = capOn;
+    capG.position.y = capOff;
+
+    /* school bag: on the back while climbing, drops away at the top */
+    var bo = 1;
+    if (c < 0){
+      if (bag.parent !== torso){ torso.add(bag); bag.position.set(-8.6, 8.8, 0); bag.rotation.set(0,0,0); }
+      bag.visible = true;
+    } else {
+      if (bag.parent !== scene){ scene.add(bag); }
+      var tc = Math.min(c, tLand);
+      bag.position.set(bagStart.x + VX*tc, bagStart.y + VY*tc - 0.5*G*tc*tc, 0);
+      bag.rotation.set(0.25*tc, 0, -BAG_L + 4.2*tc);
+      bo = 1 - clamp((c - tLand - 0.5)/0.6, 0, 1);
+      bag.visible = bo > 0;
+    }
+
+    setOpacity(bodyMats, fig);
+    setOpacity(bagMats, bo*fig);
+    rig.visible = fig > 0.001;
+    bag.visible = bag.visible && fig > 0.001;
+  }
+
+  /* ---------------- camera, fit, interaction ---------------- */
+  var TARGET = new THREE.Vector3(180, 64, 40);
+  var EL = 0.5, AZ0 = -0.3, SWAY = 0.11;
+  var fitPts = [];
+  [[30,0,-23],[330,0,-23],[30,0,23],[330,0,23],[330,90,-23],[330,90,23],
+   [30,0,102],[330,0,102],
+   [312,182,0],[292,182,0],[333,182,0],[312,0,0]].forEach(function(p){ fitPts.push(new THREE.Vector3(p[0],p[1],p[2])); });
+
+  function place(az, R){
+    camera.position.set(
+      TARGET.x + R*Math.sin(az)*Math.cos(EL),
+      TARGET.y + R*Math.sin(EL),
+      TARGET.z + R*Math.cos(az)*Math.cos(EL));
+    camera.lookAt(TARGET);
+    camera.updateMatrixWorld(true);
+  }
+  var baseR = 700;
+  function fit(){
+    var worst = 0, v = new THREE.Vector3();
+    var azs = [AZ0 - SWAY - 0.06, AZ0, AZ0 + SWAY + 0.06];
+    for (var a = 0; a < azs.length; a++){
+      for (var R = 250; R < 2200; R += 8){
+        place(azs[a], R);
+        var ok = true;
+        for (var q = 0; q < fitPts.length; q++){
+          v.copy(fitPts[q]).project(camera);
+          if (Math.abs(v.x) > 0.95 || Math.abs(v.y) > 0.95){ ok = false; break; }
+        }
+        if (ok){ worst = Math.max(worst, R); break; }
+      }
+    }
+    baseR = worst || 700;
+  }
+
+  function resize(){
+    var w = stage.clientWidth || 360;
+    var h = Math.round(w / 1.12);
+    stage.style.height = h + 'px';
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    fit();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var dragAz = 0, dragging = false, lastX = 0;
+  canvas.addEventListener('pointerdown', function(e){
+    dragging = true; lastX = e.clientX;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  canvas.addEventListener('pointermove', func
