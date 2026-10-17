@@ -320,8 +320,8 @@
       <rect x="198" y="-38" width="138" height="38" rx="12" fill="#fff" stroke="#FFD60A" stroke-width="1.6"/>
       <path d="M303 -0.6 L315 22 L327 -0.6" fill="#fff" stroke="#FFD60A" stroke-width="1.6" stroke-linejoin="round"/>
       <rect x="304.5" y="-2.2" width="21" height="3.4" fill="#fff"/>
-      <text x="267" y="-21" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">Thank you to</text>
-      <text x="267" y="-7" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">help me Climb</text>
+      <text x="267" y="-21" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">Thank you for</text>
+      <text x="267" y="-7" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">helping me Climb</text>
     </g>
   </svg>
 
@@ -335,4 +335,424 @@
   var lerp  = function(a,b,t){ return a + (b-a)*t; };
   var sm    = function(t){ t = clamp(t,0,1); return t*t*(3-2*t); };
 
-  /* ---------- stairs: 5 colours, 2 low steps each 
+  /* ---------- stairs: 5 colours, 2 low steps each ---------- */
+  var colours = ['#FF4D6D','#FF9F1C','#FFD60A','#3DDC84','#4CC9F0'];
+  var NS = 'http://www.w3.org/2000/svg';
+  var stairs = $('stairs');
+  for (var k = 1; k <= 10; k++){
+    var r = document.createElementNS(NS,'rect');
+    r.setAttribute('class','step');
+    r.setAttribute('x', 30 + 30*(k-1));
+    r.setAttribute('y', 200 - 9*k);
+    r.setAttribute('width', 30);
+    r.setAttribute('height', 9*k);
+    r.setAttribute('fill', colours[Math.ceil(k/2)-1]);
+    r.setAttribute('stroke', 'rgba(20,0,60,.22)');
+    r.setAttribute('stroke-width', '.8');
+    r.style.animationDelay = (0.04*k) + 's';
+    stairs.appendChild(r);
+    var h = document.createElementNS(NS,'rect');
+    h.setAttribute('x', 30 + 30*(k-1));
+    h.setAttribute('y', 200 - 9*k);
+    h.setAttribute('width', 30);
+    h.setAttribute('height', 1.6);
+    h.setAttribute('fill', 'rgba(255,255,255,.4)');
+    h.setAttribute('class','step');
+    h.style.animationDelay = (0.04*k) + 's';
+    stairs.appendChild(h);
+  }
+
+  /* ---------- geometry ---------- */
+  var SC = 1.2;
+  var L1 = 16, L2 = 16, ANK = 3.6, HH = 34.6, TORSO = 16, NECK = 5.4;
+  var AU = 10.6, AF = 10;
+  var N = 21, STAIRS = 10, SPEED = 2.5;   /* half-steps per second: one tap = 2 half-steps = 1 stair */
+  var TURN = 0.45, CELEB = 5.0;           /* seconds */
+  var CX = 315, TOP_Y = 110;
+
+  function X(n){ return 7.5 + 15*n; }
+  function Yg(x){
+    if (x < 30) return 200;
+    var k = Math.min(10, Math.floor((x-30)/30) + 1);
+    return 200 - 9*k;
+  }
+  function line(e,x1,y1,x2,y2){
+    e.setAttribute('x1',x1); e.setAttribute('y1',y1);
+    e.setAttribute('x2',x2); e.setAttribute('y2',y2);
+  }
+  function legIK(hx,hy,fx,fy){
+    var ax = fx, ay = fy - ANK;
+    var dx = ax - hx, dy = ay - hy;
+    var d = Math.sqrt(dx*dx + dy*dy), maxd = L1 + L2 - 0.05;
+    if (d > maxd){ var s = maxd/d; dx *= s; dy *= s; d = maxd; }
+    var a = Math.atan2(dy,dx);
+    var A = Math.acos(clamp((L1*L1 + d*d - L2*L2)/(2*L1*d), -1, 1));
+    return { kx: hx + L1*Math.cos(a-A), ky: hy + L1*Math.sin(a-A), ax: hx+dx, ay: hy+dy };
+  }
+  function armPose(sx,sy,th,flex){
+    var ex = sx + Math.sin(th)*AU,  ey = sy + Math.cos(th)*AU;
+    var t2 = th + flex;
+    return { ex:ex, ey:ey, hx: ex + Math.sin(t2)*AF, hy: ey + Math.cos(t2)*AF };
+  }
+
+  var side = $('side'), front = $('front'), bagFall = $('bagFall'), bagA = $('bagA');
+
+  /* ---------- side view: foot-by-foot climbing ---------- */
+  function sidePose(prog){
+    var i = Math.min(N, Math.floor(prog) + 1);
+    var u = clamp(prog - (i-1), 0, 1);
+    var xa = X(i-2), xb = X(i-1), xc = X(i);
+    var ya = Yg(xa), yb = Yg(xb), yc = Yg(xc);
+
+    var sx = lerp(xa, xc, sm(u));
+    var baseY = lerp(ya, yc, sm((u-0.1)/0.5));
+    var sy = baseY - (yc < ya ? 8 : 4.5)*Math.sin(Math.PI*u);
+    var aSwings = (i % 2 === 1);
+    var A = aSwings ? {x:sx, y:sy} : {x:xb, y:yb};
+    var B = aSwings ? {x:xb, y:yb} : {x:sx, y:sy};
+
+    var hx = lerp((xa+xb)/2, (xb+xc)/2, u);
+    /* hip height follows the stance foot: it rises (leg straightens) while that foot is on a higher step */
+    var hy = lerp(ya, yb, sm(u)) - HH - 0.8*Math.sin(Math.PI*u);
+    var lean = 0.04 + 0.04*Math.sin(Math.PI*u);
+    var up = {x: Math.sin(lean), y: -Math.cos(lean)};
+    var back = {x: -Math.cos(lean), y: -Math.sin(lean)};
+
+    /* legs */
+    var lN = legIK(hx,hy,A.x,A.y), lF = legIK(hx,hy,B.x,B.y);
+    line($('nlT'), hx,hy, lN.kx,lN.ky); line($('nlS'), lN.kx,lN.ky, lN.ax,lN.ay);
+    line($('flT'), hx,hy, lF.kx,lF.ky); line($('flS'), lF.kx,lF.ky, lF.ax,lF.ay);
+    var tiltA = aSwings ? -16*Math.sin(Math.PI*u) : 0;
+    var tiltB = aSwings ? 0 : -16*Math.sin(Math.PI*u);
+    $('nlShoe').setAttribute('transform','translate('+lN.ax+' '+(lN.ay+ANK)+') rotate('+tiltA+')');
+    $('flShoe').setAttribute('transform','translate('+lF.ax+' '+(lF.ay+ANK)+') rotate('+tiltB+')');
+
+    /* torso, neck, head */
+    var Hx = hx, Hy = hy;
+    var Sx = Hx + up.x*TORSO, Sy = Hy + up.y*TORSO;
+    $('waist').setAttribute('transform','translate('+Hx+' '+Hy+') rotate('+(lean*180/Math.PI)+')');
+    /* shirt ends just above the shoulder line; neck and collar sit on top of it */
+    var Tx = Sx - up.x*3.5, Ty = Sy - up.y*3.5;
+    line($('tsO'), Hx+up.x*1.5, Hy+up.y*1.5, Tx, Ty);
+    line($('ts'),  Hx+up.x*1.5, Hy+up.y*1.5, Tx, Ty);
+    var Nx = Sx + up.x*NECK, Ny = Sy + up.y*NECK;
+    line($('neck'), Sx,Sy, Nx,Ny);
+    var Kx = Sx + up.x*1.6, Ky = Sy + up.y*1.6;
+    line($('colO'), Kx+back.x*3.8, Ky+back.y*3.8, Kx-back.x*3.8, Ky-back.y*3.8);
+    line($('col'),  Kx+back.x*3.6, Ky+back.y*3.6, Kx-back.x*3.6, Ky-back.y*3.6);
+    var Cx = Nx + up.x*5.2 + 1.4, Cy = Ny + up.y*5.2 - 0.2;
+    $('hd').setAttribute('transform','translate('+Cx+' '+Cy+') rotate(-3)');
+
+    /* arms swing opposite to the legs */
+    var phase = clamp((A.x - B.x)/15, -1.3, 1.3);
+    var thN = -0.5*phase, thF = 0.5*phase;
+    var aN = armPose(Sx,Sy, thN, 0.2 + 0.35*Math.max(0,thN));
+    var aF = armPose(Sx,Sy, thF, 0.2 + 0.35*Math.max(0,thF));
+    line($('naU'), Sx,Sy, aN.ex,aN.ey); line($('naF'), aN.ex,aN.ey, aN.hx,aN.hy);
+    $('naH').setAttribute('cx',aN.hx); $('naH').setAttribute('cy',aN.hy);
+    line($('faU'), Sx,Sy, aF.ex,aF.ey); line($('faF'), aF.ex,aF.ey, aF.hx,aF.hy);
+    $('faH').setAttribute('cx',aF.hx); $('faH').setAttribute('cy',aF.hy);
+
+    /* school bag on the back */
+    var bx = Hx + up.x*8.8 + back.x*7.6, by = Hy + up.y*8.8 + back.y*7.6;
+    var rot = lean*180/Math.PI;
+    bagA.setAttribute('transform','translate('+bx+' '+by+') rotate('+rot+')');
+    return { x:bx, y:by, rot:rot };
+  }
+
+  /* ---------- front view: celebration (c2 = seconds since celebration began) ---------- */
+  function frontPose(c2, still){
+    var k = sm(c2/0.4);
+    var wob = (c2 > 0.4 && !still) ? 1.1*Math.sin(c2*14) : 0;
+    var sides = [['L',-1],['R',1]];
+    for (var q = 0; q < 2; q++){
+      var id = sides[q][0], s = sides[q][1];
+      var shx = s*7.2, shy = -37;
+      var elx = lerp(s*8.8, s*12.8, k), ely = lerp(-28.5, -46.5, k);
+      var hnx = lerp(s*9.4, s*14.8, k), hny = lerp(-20, -56.5, k) + (s>0 ? wob : -wob)*k;
+      line($('f'+id+'U'), shx,shy, elx,ely);
+      line($('f'+id+'F'), elx,ely, hnx,hny);
+      $('f'+id+'H').setAttribute('cx',hnx); $('f'+id+'H').setAttribute('cy',hny);
+      /* after a right turn his right hand (degree) is on our left, left hand (money) on our right */
+      var item = (id === 'L') ? $('degree') : $('money');
+      var rotI = (id === 'L') ? -22 : 20;
+      var sc = clamp(k*3, 0, 1);
+      item.setAttribute('transform','translate('+hnx+' '+(hny-2.6)+') rotate('+rotI+') scale('+sc+')');
+    }
+    var capOff = -26, capOp = 0;
+    if (c2 >= 0.25){
+      capOp = 1;
+      var p = (c2-0.25)/0.35;
+      capOff = p < 1 ? -26*(1 - sm(p)) : 0;
+    }
+    $('cap').setAttribute('transform','translate(0 '+capOff+')');
+    $('cap').setAttribute('opacity', capOp);
+    var hop = 0;
+    if (!still){
+      if (c2 >= 0.6){
+        var ph = ((c2 - 0.6) % 0.5) / 0.35;      /* a hop every half second */
+        if (ph < 1) hop = -7*Math.sin(Math.PI*ph);
+      }
+    }
+    return hop;
+  }
+
+  var bubble = $('bubble');
+  function backOut(t){ t = clamp(t,0,1) - 1; return 1 + 2.70158*t*t*t + 1.70158*t*t; }
+
+  /* ---------- renderers ---------- */
+  function renderClimb(prog){
+    sidePose(prog);
+    side.style.display = '';
+    side.removeAttribute('transform');
+    side.removeAttribute('opacity');
+    bagA.style.display = '';
+    front.style.display = 'none';
+    bagFall.style.display = 'none';
+    bubble.style.display = 'none';
+  }
+
+  /* c = seconds since he reached the top */
+  function renderCelebrate(c, still){
+    var b = sidePose(N);                 /* final climbing pose */
+
+    /* bag falls off and fades */
+    var g = 180, vx = -22, vy = -10, LAND = 113;
+    var tl = (-vy + Math.sqrt(vy*vy - 2*g*(b.y - LAND)))/g;
+    var tc = Math.min(c, tl);
+    var px = b.x + vx*tc, py = b.y + vy*tc + 0.5*g*tc*tc, pr = b.rot + 160*tc;
+    var bo = 1 - clamp((c - tl - 0.4)/0.5, 0, 1);
+    bagFall.style.display = bo > 0 ? '' : 'none';
+    bagFall.setAttribute('transform','translate('+px+' '+py+') rotate('+pr+')');
+    bagFall.setAttribute('opacity', bo);
+    bagA.style.display = 'none';
+
+    /* turn to face the viewer (same turn and speed as the original) */
+    if (c < 0.3){
+      var sx = 1 - sm(c/0.3);
+      side.style.display = '';
+      side.setAttribute('transform','translate('+CX+' 0) scale('+Math.max(sx,0.02)+' 1) translate('+(-CX)+' 0)');
+    } else {
+      side.style.display = 'none';
+    }
+
+    var c2 = Math.max(0, c - TURN);
+    var hop = frontPose(c2, still);
+    if (c >= 0.15){
+      var fx = sm((c-0.15)/0.3);
+      front.style.display = '';
+      front.setAttribute('transform','translate('+CX+' '+(TOP_Y + hop)+') scale('+(SC*Math.max(fx,0.02))+' '+SC+')');
+    } else {
+      front.style.display = 'none';
+    }
+
+    /* dialogue box appears as the celebration starts */
+    if (c >= TURN){
+      var bs = still ? 1 : Math.max(backOut(c2/0.3), 0.01);
+      bubble.style.display = '';
+      bubble.setAttribute('transform','translate(315 22) scale('+bs+') translate(-315 -22)');
+    } else {
+      bubble.style.display = 'none';
+    }
+  }
+
+  /* ---------- soft sounds (Web Audio, created on the first click) ---------- */
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var ctx = null, master = null, bus = null, mus = null, muted = false;
+  var SCALE = [261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,783.99,880.00]; /* C major pentatonic, one note per stair */
+  function audioInit(){
+    if (!AC) return;
+    if (!ctx){
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9;
+      bus = ctx.createGain();
+      var dly = ctx.createDelay(1); dly.delayTime.value = 0.24;
+      var fb = ctx.createGain(); fb.gain.value = 0.3;
+      var wet = ctx.createGain(); wet.gain.value = 0.3;
+      var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400;
+      bus.connect(master); bus.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); lp.connect(wet); wet.connect(master);
+      master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+  }
+  /* one soft note: attack, then a long smooth fade; optional harmonics for a warm / bell-like colour */
+  function tone(freq, t0, dur, vol, out, partials){
+    var parts = partials || [[1,1,'sine'],[2,0.18,'sine']];
+    for (var i = 0; i < parts.length; i++){
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = parts[i][2]; o.frequency.value = freq*parts[i][0];
+      var v = vol*parts[i][1];
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(v, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(out || bus);
+      o.start(t0); o.stop(t0 + dur + 0.05);
+    }
+  }
+  /* one smooth, gently rising loudness from the first stair to the top; the same tone recipe on every stair so there is no jump */
+  var STAIR_VOL = [0.352, 0.321, 0.295, 0.26, 0.243, 0.219, 0.207, 0.197, 0.185, 0.179];
+  var STAIR_PARTS = [[1,1,'sine'],[2,0.3,'sine'],[3,0.1,'sine']];
+  function stairTone(n){
+    if (!ctx) return;
+    var i = clamp(n-1, 0, SCALE.length-1);
+    tone(SCALE[i], ctx.currentTime + 0.01, 1.1, STAIR_VOL[i], bus, STAIR_PARTS);
+  }
+  var BELL = [[1,1,'sine'],[2.76,0.22,'sine'],[5.4,0.06,'sine']];
+  function chime(){                                  /* celebration chime: a soft rising sparkle */
+    if (!ctx) return;
+    var t = ctx.currentTime + 0.02, notes = [523.25,659.25,783.99,1046.5,1318.5];
+    for (var i = 0; i < notes.length; i++) tone(notes[i], t + i*0.09, 1.5, 0.11, bus, BELL);
+  }
+  var CHORDS = [[130.81,261.63,329.63,392.00],[110.00,261.63,329.63,440.00],[174.61,261.63,349.23,440.00],[98.00,246.94,293.66,392.00]];
+  var ARP    = [[659.25,783.99,1046.5,783.99],[659.25,880.00,1046.5,880.00],[698.46,880.00,1046.5,880.00],[587.33,783.99,987.77,783.99]];
+  function music(){                                  /* ~5 s of soft pads and a gentle bell arpeggio (C - Am - F - G) */
+    if (!ctx) return;
+    stopMusic(true);
+    var t0 = ctx.currentTime + 0.03, bar = 1.2;
+    mus = ctx.createGain(); mus.gain.setValueAtTime(1, t0);
+    mus.gain.setValueAtTime(1, t0 + CELEB - 0.8);
+    mus.gain.linearRampToValueAtTime(0.0001, t0 + CELEB - 0.05);
+    mus.connect(bus);
+    for (var k = 0; k < 4; k++){
+      var ch = CHORDS[k], bt = t0 + k*bar;
+      for (var j = 0; j < ch.length; j++){
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = (j === 0) ? 'triangle' : 'sine'; o.frequency.value = ch[j];
+        var v = (j === 0) ? 0.05 : 0.032;
+        g.gain.setValueAtTime(0.0001, bt);
+        g.gain.linearRampToValueAtTime(v, bt + 0.3);
+        g.gain.linearRampToValueAtTime(v*0.7, bt + bar - 0.15);
+        g.gain.linearRampToValueAtTime(0.0001, bt + bar + 0.25);
+        o.connect(g); g.connect(mus); o.start(bt); o.stop(bt + bar + 0.3);
+      }
+      for (var m = 0; m < 4; m++) tone(ARP[k][m], bt + m*0.3, 0.9, 0.06, mus, BELL);
+    }
+  }
+  function stopMusic(instant){
+    if (!mus || !ctx) return;
+    var t = ctx.currentTime, m = mus; mus = null;
+    m.gain.cancelScheduledValues(t);
+    m.gain.setValueAtTime(m.gain.value, t);
+    m.gain.linearRampToValueAtTime(0.0001, t + (instant ? 0.05 : 0.25));
+  }
+  /* ---------- flower rain over the whole screen ---------- */
+  var cvs = $('rain'), g2 = cvs.getContext('2d'), flowers = [], spawnAcc = 0, vw = 0, vh = 0, hasRain = false;
+  var PAL = [['#FF6FB5','#FFD60A'],['#FFFFFF','#FFB703'],['#FFC2E2','#FF8FA3'],['#FFE066','#FF8A1F'],['#C9A7FF','#FFE066'],['#FF8FAB','#FFF3B0'],['#9BE7FF','#FFE066']];
+  function sizeRain(){
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    vw = window.innerWidth; vh = window.innerHeight;
+    cvs.width = Math.round(vw*d); cvs.height = Math.round(vh*d);
+    g2.setTransform(d,0,0,d,0,0);
+  }
+  window.addEventListener('resize', sizeRain); sizeRain();
+  function drawFlower(f){
+    g2.save(); g2.translate(f.x, f.y); g2.rotate(f.rot);
+    g2.fillStyle = f.pal[0];
+    for (var k = 0; k < 5; k++){
+      g2.save(); g2.rotate(k*Math.PI*2/5);
+      g2.beginPath(); g2.ellipse(0, -f.s*0.55, f.s*0.36, f.s*0.55, 0, 0, Math.PI*2); g2.fill();
+      g2.restore();
+    }
+    g2.fillStyle = f.pal[1];
+    g2.beginPath(); g2.arc(0, 0, f.s*0.27, 0, Math.PI*2); g2.fill();
+    g2.restore();
+  }
+  function rainStep(dt, c2){                         /* c2 = seconds since the celebration began */
+    var spawning = c2 < CELEB - 0.9;
+    if (spawning){
+      spawnAcc += dt*26;
+      while (spawnAcc >= 1){
+        spawnAcc -= 1;
+        var s = 9 + Math.random()*13, x0 = Math.random()*vw;
+        flowers.push({x:x0, x0:x0, y:-24, s:s, vy:150 + Math.random()*140, t:Math.random()*6, sw:14 + Math.random()*28,
+                      sf:1 + Math.random()*1.6, rot:Math.random()*6.28, vr:(Math.random()-.5)*3,
+                      pal:PAL[Math.floor(Math.random()*PAL.length)]});
+      }
+    }
+    g2.clearRect(0, 0, vw, vh);
+    var alpha = clamp((CELEB - c2)/0.6, 0, 1);
+    g2.globalAlpha = alpha;
+    for (var i = flowers.length - 1; i >= 0; i--){
+      var f = flowers[i];
+      f.y += f.vy*dt; f.t += dt; f.rot += f.vr*dt; f.x = f.x0 + Math.sin(f.t*f.sf)*f.sw;
+      if (f.y > vh + 30){ flowers.splice(i,1); continue; }
+      drawFlower(f);
+    }
+    g2.globalAlpha = 1;
+    hasRain = true;
+  }
+  function rainClear(){
+    flowers.length = 0; spawnAcc = 0;
+    if (hasRain){ g2.clearRect(0, 0, vw, vh); hasRain = false; }
+  }
+
+  /* ---------- state machine ---------- */
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var btn = $('tapBtn');
+  var state = 'climb';          /* 'climb' | 'celebrate' */
+  var stairsDone = 0, prog = 0, target = 0, cStart = 0, soonOn = false, last = null, musicOn = false;
+
+  btn.addEventListener('click', function(){
+    audioInit();
+    if (state !== 'climb' || stairsDone >= STAIRS) return;
+    stairsDone++;
+    stairTone(stairsDone);
+    target = stairsDone < STAIRS ? 2*stairsDone : N;   /* last tap also walks him to the centre of the top step */
+  });
+
+  function resetAll(){
+    state = 'climb'; stairsDone = 0; prog = 0; target = 0; soonOn = false;
+    btn.textContent = 'Click to Climb';
+    btn.classList.remove('gold');
+    musicOn = false; stopMusic(true); rainClear();
+    renderClimb(0);
+  }
+
+  function tick(now){
+    var dt = last === null ? 0 : Math.min((now - last)/1000, 0.05);
+    last = now;
+
+    if (state === 'climb'){
+      if (prog < target) prog = reduce ? target : Math.min(target, prog + SPEED*dt);
+      renderClimb(prog);
+      if (prog >= N - 1e-6){ state = 'celebrate'; cStart = now; soonOn = false; musicOn = false; chime(); }
+    } else {
+      var c = (now - cStart)/1000;
+      if (c >= TURN + CELEB){
+        resetAll();                                    /* exactly 5 s after "Coming Soon" began */
+      } else {
+        if (c >= TURN && !soonOn){
+          soonOn = true;
+          btn.innerHTML = '<span class="cs"><span class="cs-t">Coming Soon</span></span>';
+          btn.classList.add('gold');
+        }
+        if (c >= TURN && !musicOn){ musicOn = true; music(); }
+        if (c >= TURN && !reduce) rainStep(dt, c - TURN);
+        renderCelebrate(reduce ? TURN + 0.65 : c, reduce);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  resetAll();
+  requestAnimationFrame(tick);
+})();
+</script>
+<script>
+/* keep the tagline rule always a little longer than the rule under MARXO */
+(function(){
+  var h1=document.querySelector('h1'), tg=document.querySelector('.tagline'), main=document.querySelector('main');
+  function fit(){
+    tg.style.minWidth='';
+    var need=h1.getBoundingClientRect().width*1.08;
+    if(tg.getBoundingClientRect().width<need) tg.style.minWidth=Math.min(need,main.clientWidth)+'px';
+    /* let the tagline rule reach a little beyond the words on both sides (stays inside the screen) */
+    var tw=tg.getBoundingClientRect().width, vw=document.documentElement.clientWidth;
+    tg.style.setProperty('--ext',Math.max(0,Math.min(tw*0.08,(vw-tw)/2-8))+'px');
+  }
+  fit(); window.addEventListener('resize',fit); window.addEventListener('load',fit);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>
