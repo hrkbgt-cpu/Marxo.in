@@ -3,110 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Marxo – Step by Step | Coming Soon</title>
-<meta name="description" content="Marxo – Step by Step. Coming soon.">
+<title>Marxo – Stepwise Learning Systems | Coming Soon</title>
+<meta name="description" content="Marxo – Stepwise Learning Systems. Coming soon.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@700&family=Poppins:wght@500;600;800&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{min-height:100%}
   body{
-    min-height:100vh;
+    min-height:100vh;min-height:100dvh;
     font-family:'Poppins',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
     color:#fff;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(76,201,240,.55), transparent 45%),
-      radial-gradient(circle at 100% 100%, rgba(247,37,133,.55), transparent 45%),
-      linear-gradient(135deg,#4361EE 0%,#7209B7 100%);
+    /* same deep-navy night sky as the Marxo NEET app splash */
+    background-color:#0A1030;
+    background-image:
+      radial-gradient(ellipse 75% 45% at 50% 22%, rgba(30,48,120,.85) 0%, rgba(22,35,90,.55) 35%, rgba(13,21,51,0) 70%),
+      linear-gradient(180deg,#0E1638 0%,#0B1233 45%,#070B24 100%);
+    background-attachment:fixed;
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:center;
-    padding:24px 16px;
+    justify-content:center;                  /* everything fits on one screen, centred vertically */
+    padding:clamp(10px,2.6vh,36px) 16px clamp(8px,1.6vh,20px);
     text-align:center;
     overflow-x:hidden;
   }
-  main{width:100%;max-width:560px}
-  .welcome{font-weight:600;font-size:1.2rem;letter-spacing:.02em;opacity:.95}
+  :root{--btn:270px}
+  main{width:100%;max-width:560px;position:relative;z-index:1}
+  #stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  .welcome{font-weight:500;font-size:clamp(.78rem,min(4vw,2.3vh),1.05rem);letter-spacing:.22em;text-transform:uppercase;color:#AEB8DA;margin-bottom:clamp(0px,.6vh,6px)}
   h1{
     position:relative;
-    display:table;                     /* shrink-wraps the word so the golden rule is exactly as long as MARXO */
-    margin:0 auto 22px;
-    padding:0 .4em;                    /* the golden rule is wider than the word, so MARXO sits inside it */
-    font-weight:800;
-    font-size:clamp(3.2rem,16vw,6.5rem);
-    line-height:.9;
-    letter-spacing:-.01em;
-    color:#FFD60A;
-    text-shadow:0 5px 0 rgba(20,0,60,.35);
+    display:table;
+    margin:0 auto 0;
+    padding:0 0 0 .16em;               /* balances the letter-spacing after the last letter */
+    font-family:'Noto Serif',Georgia,'Times New Roman',serif;
+    font-weight:700;
+    font-size:clamp(2.6rem,min(19vw,12vh),8rem);
+    line-height:1;
+    letter-spacing:.16em;
+    /* gold like the app: lighter at the top, deeper at the bottom */
+    background:linear-gradient(180deg,#F6DC8C 0%,#E2BC5E 50%,#C79A3C 100%);
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 18px rgba(226,188,94,.18));
   }
-  /* golden rule under MARXO: thin at both ends, bright in the middle, flashes once */
-  h1::after{
-    content:"";
-    position:absolute;left:0;right:0;bottom:calc(-.05em - 3px);height:3px;border-radius:3px;
-    background:linear-gradient(90deg,rgba(255,214,10,0) 0%,#FFB400 14%,#FFD60A 38%,#FFF3A6 50%,#FFD60A 62%,#FFB400 86%,rgba(255,214,10,0) 100%);
-    -webkit-clip-path:polygon(0 50%,12% 0,88% 0,100% 50%,88% 100%,12% 100%);
-    clip-path:polygon(0 50%,12% 0,88% 0,100% 50%,88% 100%,12% 100%);
+  /* hairline gold rule like the app: wider than the word, fading out at both ends */
+  .rule{
+    display:block;
+    width:min(92%,30rem);
+    height:1px;
+    margin:clamp(4px,1.1vh,10px) auto clamp(6px,1.5vh,14px);
+    background:linear-gradient(90deg,rgba(201,162,74,0) 0%,rgba(201,162,74,.55) 20%,#F0D58A 50%,rgba(201,162,74,.55) 80%,rgba(201,162,74,0) 100%);
     transform-origin:50% 50%;
-    animation:ruleFlash 1.4s ease-out .5s both;
+    animation:ruleFlash 1.4s ease-out .4s both;
   }
   @keyframes ruleFlash{
     0%{opacity:0;transform:scaleX(.05)}
-    35%{opacity:1;transform:scaleX(1);filter:brightness(2.4) drop-shadow(0 0 10px rgba(255,235,120,1))}
-    100%{opacity:1;transform:scaleX(1);filter:brightness(1) drop-shadow(0 0 3px rgba(255,214,10,.6))}
+    35%{opacity:1;transform:scaleX(1);filter:brightness(1.8) drop-shadow(0 0 6px rgba(240,213,138,.9))}
+    100%{opacity:1;transform:scaleX(1);filter:none}
   }
   .tagline{
-    position:relative;
-    display:table;
-    max-width:100%;
-    margin:22px auto 22px;
-    font-weight:800;
-    font-size:clamp(1.05rem,5.2vw,1.9rem);
-    letter-spacing:.03em;
-    line-height:1.25;
-    text-wrap:balance;
-    /* MARXO's golden yellow, with a clearly visible light sweep and glow */
-    background:linear-gradient(100deg,#FFB400 0%,#FFD60A 30%,#FFFBD2 50%,#FFD60A 70%,#FFB400 100%);
-    background-size:300% 100%;
-    background-position:130% 0;
+    display:table;                 /* shrink-wraps the words so the script can size them */
+    white-space:nowrap;
+    margin:-.15em auto clamp(6px,1.4vh,14px);
+    padding-left:.2em;             /* balances the trailing letter-spacing */
+    font-family:'Poppins',system-ui,sans-serif;
+    font-weight:500;
+    font-size:clamp(.72rem,min(3.6vw,2.1vh),1.05rem);
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    line-height:1.4;
+    /* MARXO gold */
+    background:linear-gradient(180deg,#F6DC8C 0%,#E2BC5E 55%,#C79A3C 100%);
     -webkit-background-clip:text;background-clip:text;
     color:transparent;-webkit-text-fill-color:transparent;
-    filter:drop-shadow(0 3px 0 rgba(20,0,60,.35)) drop-shadow(0 0 0 rgba(255,214,10,0));
-    animation:tagIn .8s ease-out both, tagShine 2.8s ease-in-out 1s infinite, tagGlow 2.8s ease-in-out 1s infinite;
-  }
-  /* golden rule under the tagline: exactly as long as the words, tapering to a point at both ends */
-  .tagline::after{
-    content:"";
-    position:absolute;left:calc(var(--ext,0px)*-1);right:calc(var(--ext,0px)*-1);bottom:-12px;height:3px;border-radius:3px;
-    background:linear-gradient(90deg,rgba(255,214,10,0) 0%,#FFB400 14%,#FFD60A 38%,#FFF3A6 50%,#FFD60A 62%,#FFB400 86%,rgba(255,214,10,0) 100%);
-    -webkit-clip-path:polygon(0 50%,12% 0,88% 0,100% 50%,88% 100%,12% 100%);
-    clip-path:polygon(0 50%,12% 0,88% 0,100% 50%,88% 100%,12% 100%);
-    transform-origin:50% 50%;
-    animation:ruleFlash 1.4s ease-out 1.1s both;
-  }
-  /* ===== desktop / laptop: scale the whole page to the window height so nothing needs scrolling ===== */
-  @media (min-width:900px){
-    main{max-width:clamp(340px,calc((100vh - 415px) / .737),720px)}
-    h1{font-size:clamp(4.5rem,11vh,7rem)}
-    .tagline{font-size:clamp(1.4rem,3.2vh,2.2rem)}
+    font-weight:600;
+    animation:tagIn .8s ease-out .6s both;
   }
   @keyframes tagIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  @keyframes tagShine{0%{background-position:130% 0}50%,100%{background-position:-30% 0}}
-  @keyframes tagGlow{
-    0%,100%{filter:drop-shadow(0 3px 0 rgba(20,0,60,.35)) drop-shadow(0 0 0 rgba(255,214,10,0))}
-    25%{filter:drop-shadow(0 3px 0 rgba(20,0,60,.35)) drop-shadow(0 0 14px rgba(255,214,10,.95))}
-  }
   svg{display:block;width:100%;height:auto;margin:0 auto;overflow:visible}
-  .slot{height:112px;margin-top:10px;display:flex;align-items:flex-start;justify-content:center}
+  .slot{height:clamp(62px,10vh,86px);margin-top:clamp(2px,.8vh,8px);display:flex;align-items:flex-start;justify-content:center}
   .soon{
     display:block;
-    width:270px;
+    width:var(--btn);
     max-width:100%;
     font-family:inherit;
     font-weight:800;
-    font-size:1.55rem;
-    color:#7209B7;
-    background:#fff;
+    font-size:clamp(1.15rem,3.2vh,1.55rem);
+    color:#0B1233;                       /* same deep navy as the page background */
+    background:linear-gradient(180deg,#F6DC8C 0%,#E2BC5E 55%,#C79A3C 100%);   /* MARXO gold */
     border:0;
     border-radius:999px;
     padding:12px 26px;
@@ -120,8 +107,8 @@
   .soon:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(20,0,60,.3)}
   .soon.gold{
     width:100%;
-    font-size:clamp(1.5rem,7.5vw,2.2rem);
-    padding:12px 10px;
+    font-size:clamp(1.25rem,min(7.5vw,4.4vh),2.2rem);
+    padding:clamp(8px,1.4vh,12px) 10px;
     cursor:default;
     background-color:#FFC400;
     background-image:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 62%);
@@ -132,7 +119,7 @@
     display:inline-block;
     padding:6px 24px;
     border-radius:999px;
-    background:linear-gradient(135deg,#2B0A5C,#5B1FB5);
+    background:linear-gradient(135deg,#0B1233,#22337A);
     box-shadow:inset 0 0 0 2px rgba(255,255,255,.2);
     line-height:1.3;
   }
@@ -166,18 +153,74 @@
     97.833%{background-color:#A66BFF;box-shadow:0 5px 0 rgba(20,0,60,.3),0 0 6px 1px rgba(166,107,255,0.4);filter:brightness(.97)}
     100%{background-color:#FFC400;box-shadow:0 5px 0 rgba(20,0,60,.3),0 0 6px 1px rgba(255,196,0,0.4);filter:brightness(.97)}
   }
+  #side,#front{filter:drop-shadow(0 0 .6px rgba(255,255,255,.95)) drop-shadow(0 0 2.2px rgba(170,190,255,.45))}
+  /* ™ sits just after the O, without pushing MARXO off-centre */
+  .tm{
+    position:absolute;left:calc(100% - .42em);top:.32em;
+    font-family:'Poppins',system-ui,sans-serif;font-weight:600;
+    font-size:.42em;letter-spacing:0;line-height:1;
+    color:#E2BC5E;-webkit-text-fill-color:#E2BC5E;
+  }
+  /* ===== info section below the button ===== */
+  .info{position:relative;z-index:1;width:100%;max-width:560px;margin-top:0;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.5vh,14px)}
+  .links{
+    /* two equal buttons; together they stick out equally on both sides of the 270px "Click to Climb" button */
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    width:min(calc(var(--btn) + 60px),100%);white-space:nowrap}
+  .exams-label{font-size:.72rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:#8E99C2}
+  .exams{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:calc(clamp(6px,1.5vh,14px) * -.5)}
+  .exams span{
+    font-family:'Noto Serif',Georgia,serif;font-weight:700;font-size:clamp(.85rem,2.2vh,1.05rem);letter-spacing:.12em;
+    color:#F0D58A;padding:clamp(3px,.8vh,6px) 16px;border-radius:999px;
+    border:1px solid rgba(226,188,94,.55);background:rgba(226,188,94,.07);
+  }
+  .wa,.mail{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    min-width:0;
+    padding:clamp(5px,1vh,8px) 6px;border-radius:999px;
+    color:#0B1233;text-decoration:none;            /* deep navy, same as the page */
+    font-weight:700;font-size:clamp(.82rem,3.7vw,.98rem);
+    box-shadow:0 4px 0 rgba(0,0,0,.3);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wa{background:#1FA855}
+  /* Google-style four-colour gradient */
+  .mail{
+    background:linear-gradient(110deg,#4285F4 0%,#4285F4 18%,#EA4335 42%,#F2A900 66%,#34A853 88%,#34A853 100%);
+  }
+  .wa:active,.mail:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+  .wa svg,.mail svg{width:clamp(24px,7vw,30px);height:clamp(24px,7vw,30px);flex:none;margin:0;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+  .foot{margin-top:clamp(0px,.8vh,10px);font-size:.75rem;letter-spacing:.08em;color:#6F7AA3}
+  .foot::before{content:"";display:block;width:180px;height:1px;margin:0 auto clamp(4px,1vh,10px);
+    background:linear-gradient(90deg,rgba(201,162,74,0),rgba(201,162,74,.5),rgba(201,162,74,0))}
+  /* ===== desktop / laptop: bigger stage and buttons, hover feedback ===== */
+  @media (min-width:900px){
+    :root{--btn:330px}
+    main,.info{max-width:780px}
+    .soon{font-size:clamp(1.3rem,3.4vh,1.8rem)}
+    .soon.gold{font-size:clamp(1.5rem,4.6vh,2.4rem)}
+    .wa,.mail{font-size:clamp(1rem,2.4vh,1.2rem)}
+    .wa svg,.mail svg{width:clamp(26px,3.6vh,32px);height:clamp(26px,3.6vh,32px)}
+    .tagline{font-size:clamp(.9rem,2vh,1.2rem)}
+  }
+  @media (hover:hover){
+    .soon:not(.gold):hover{filter:brightness(1.07);box-shadow:0 5px 0 rgba(0,0,0,.3),0 0 18px rgba(226,188,94,.45)}
+    .wa:hover,.mail:hover{filter:brightness(1.1)}
+  }
+  .soon:focus-visible,.wa:focus-visible,.mail:focus-visible{outline:2px solid #F0D58A;outline-offset:3px}
   #rain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10}
   .step{transform-box:fill-box;transform-origin:bottom;animation:rise .45s ease-out both}
   @keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-  @media (prefers-reduced-motion:reduce){.tagline{animation:none;background-position:50% 0}h1::after,.tagline::after{animation:none}.step{animation:none}.soon.gold{animation:none;box-shadow:0 5px 0 rgba(20,0,60,.3),0 0 24px 8px rgba(255,214,10,.85)}.cs-t{animation:none}.soon{transition:none}}
+  @media (prefers-reduced-motion:reduce){.tagline{animation:none}.rule{animation:none}.step{animation:none}.soon.gold{animation:none;box-shadow:0 5px 0 rgba(20,0,60,.3),0 0 24px 8px rgba(255,214,10,.85)}.cs-t{animation:none}.soon{transition:none}}
 </style>
 </head>
 <body>
+<canvas id="stars" aria-hidden="true"></canvas>
 <canvas id="rain" aria-hidden="true"></canvas>
 <main>
   <p class="welcome">Welcome to</p>
-  <h1>MARXO</h1>
-  <p class="tagline">Smaller Steps - Bigger Success</p>
+  <h1>MARXO<sup class="tm" aria-label="trademark">™</sup></h1>
+  <p class="tagline">Stepwise Learning Systems</p>
 
   <svg viewBox="0 -44 350 258" role="img" aria-label="A student with a school bag climbs one colourful stair for every click; at the top he turns to face us, the bag drops away, and he celebrates with a degree in one hand and money in the other">
     <defs>
@@ -188,7 +231,7 @@
         <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9E0EC"/>
       </linearGradient>
       <linearGradient id="gPants" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#2E4075"/><stop offset="1" stop-color="#18224C"/>
+        <stop offset="0" stop-color="#8C96AE"/><stop offset="1" stop-color="#646E87"/>
       </linearGradient>
       <g id="bagShape">
         <rect x="-4.8" y="-9" width="9.6" height="18" rx="3.6" fill="#B3261E"/>
@@ -211,22 +254,30 @@
       <line id="faF" stroke="#C99A73" stroke-width="3.6" stroke-linecap="round"/>
       <circle id="faH" r="2" fill="#C99A73"/>
       <!-- far leg -->
-      <line id="flT" stroke="#18224C" stroke-width="7.2" stroke-linecap="round"/>
-      <line id="flS" stroke="#18224C" stroke-width="5.8" stroke-linecap="round"/>
+      <line id="flT" stroke="#565F77" stroke-width="7.2" stroke-linecap="round"/>
+      <line id="flS" stroke="#565F77" stroke-width="5.8" stroke-linecap="round"/>
       <g id="flShoe"><path d="M-3.4 -3.8 L4.6 -3.8 Q8.6 -3.6 8.6 -0.8 L8.6 0 L-3.4 0 Z" fill="#111"/></g>
       <!-- school bag -->
       <use id="bagA" href="#bagShape"/>
       <!-- neck sits behind the shirt; the collar covers its base -->
       <line id="neck" stroke="#D9A57C" stroke-width="3.6" stroke-linecap="round"/>
       <!-- torso -->
-      <line id="tsO" stroke="#C3CAD8" stroke-width="12.4" stroke-linecap="round"/>
-      <line id="ts" stroke="url(#gShirt)" stroke-width="11" stroke-linecap="round"/>
-      <line id="colO" stroke="#C3CAD8" stroke-width="3.6" stroke-linecap="round"/>
-      <line id="col" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+      <g id="torso">
+        <path d="M-5.6 1.2 L5.4 1.2 L5.9 -8.5 Q6.6 -13.4 4.6 -16.2 Q2.6 -17.6 -0.4 -17.6 L-3.6 -17.4 Q-6.9 -16.6 -6.9 -12.6 Z" fill="url(#gShirt)" stroke="#C3CAD8" stroke-width=".5"/>
+        <path d="M1.2 -16.4 L1.6 -2" stroke="#D3D9E5" stroke-width=".5" fill="none"/>
+        <circle cx="1.9" cy="-12" r=".45" fill="#B9C1D0"/>
+        <circle cx="2.0" cy="-8" r=".45" fill="#B9C1D0"/>
+        <circle cx="2.1" cy="-4" r=".45" fill="#B9C1D0"/>
+        <!-- collar -->
+        <path d="M-2.6 -18.4 L1.8 -18.6 L3.6 -15.6 L0.6 -16.8 Z" fill="#FFFFFF" stroke="#BCC4D3" stroke-width=".45" stroke-linejoin="round"/>
+        <path d="M-3.4 -18 L-1.4 -18.5 L-0.6 -16.2 Z" fill="#EEF1F6" stroke="#BCC4D3" stroke-width=".4" stroke-linejoin="round"/>
+      </g>
+      <!-- backpack strap over the shoulder -->
+      <polyline id="strap" fill="none" stroke="#7A1812" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
       <!-- shirt tucked into trousers, belt with buckle -->
       <g id="waist">
-        <rect x="-5.7" y="-2.6" width="11.4" height="6" rx="2.4" fill="#243263"/>
-        <rect x="-5.9" y="-3.8" width="11.8" height="2.4" fill="#121A3E"/>
+        <rect x="-5.7" y="-2.6" width="11.4" height="6" rx="2.4" fill="#7A849C"/>
+        <rect x="-5.9" y="-3.8" width="11.8" height="2.4" fill="#2A2F3D"/>
         <rect x="3.1" y="-3.6" width="2.4" height="2" rx=".4" fill="#D8C486"/>
       </g>
       <!-- near leg -->
@@ -239,17 +290,16 @@
       <circle id="naH" r="2.1" fill="#E0AC82"/>
       <!-- head -->
       <g id="hd">
-        <ellipse cx="-1.8" cy="-2.2" rx="5.4" ry="5.4" fill="#1F1410"/>
-        <path d="M-2.4 -4.4 C0.6 -5.2 3.8 -4.4 4.8 -2.4 C5.1 -1.3 5 -0.6 5.2 0.4 C5.5 0.9 5.9 1.5 5.7 1.9 C5.5 2.2 5.2 2.2 5.1 2.5 C5.2 3.2 5.1 3.8 4.7 4.3 C4.3 5.8 2.2 6.6 -0.2 6.3 C-2.4 5.9 -3.8 3.6 -3.9 0.6 C-3.9 -1.8 -3.3 -3.4 -2.4 -4.4 Z" fill="url(#gSkin)"/>
-        <ellipse cx="-3.4" cy="1.2" rx="1.3" ry="1.9" fill="#D9A57C" stroke="#BE8A63" stroke-width=".4"/>
-        <path d="M-3.6 .3 q.9 .4 .3 1.9" fill="none" stroke="#BE8A63" stroke-width=".35" stroke-linecap="round"/>
-        <path d="M-7.1 -0.5 C-7.6 -6.6 -2.4 -8.4 1.6 -7.8 C4.7 -7.4 6.4 -5.4 5.7 -3 C5.3 -3.6 4.9 -4 4.6 -4.2 C3 -4.8 1.6 -4.2 0.4 -3.6 C-0.8 -3.2 -1.8 -3.8 -2.6 -3.2 L-3.4 -3.4 C-4.6 -3 -5 -1 -5.2 0.6 Z" fill="#1F1410"/>
-        <path d="M-2.3 -3.5 C-1.4 -3.3 -0.9 -1.4 -1 0.3 C-1 1.5 -1.2 2.5 -1.5 3.1 C-1.9 3.2 -2.3 3 -2.5 2.7 C-2.2 1.2 -2.3 -1.2 -2.3 -3.5 Z" fill="#1F1410"/>
-        <path d="M2.3 -2.4 Q3.5 -3 4.6 -2.4" fill="none" stroke="#1F1410" stroke-width=".6" stroke-linecap="round"/>
-        <ellipse cx="3.2" cy="-0.7" rx=".8" ry=".95" fill="#2a1a14"/>
-        <circle cx="3.45" cy="-1" r=".25" fill="#fff"/>
-        <path d="M5.2 .7 q.6 .8 -.1 1.3" fill="none" stroke="#BE8A63" stroke-width=".45" stroke-linecap="round"/>
-        <path d="M3.4 3.7 q1 .55 1.8 0" fill="none" stroke="#8A4B3A" stroke-width=".55" stroke-linecap="round"/>
+        <circle cx="-0.8" cy="-0.6" r="6.1" fill="#3A2216"/>
+        <path d="M-1 -5.4 C2.4 -6.4 5.5 -4.6 5.8 -1.6 L6 -0.4 L7.1 1.2 Q7.2 1.7 6.1 1.8 C6.2 2.7 6 3.4 5.5 4 C4.7 5.6 2.7 6.5 0.4 6.3 C-2.4 6.1 -4.3 4.1 -4.4 1.2 C-4.6 -2 -3.6 -4.6 -1 -5.4 Z" fill="url(#gSkin)"/>
+        <path d="M-6.5 1.4 C-7.5 -5 -3.6 -8.1 0.9 -7.7 C4.6 -7.4 6.8 -5.4 6.3 -2.5 C5.3 -3.8 3.5 -4.4 1.7 -3.8 C0.6 -3.4 -0.6 -3.6 -1.7 -2.8 C-2.7 -1.8 -3.1 -0.2 -3.3 1.5 C-3.6 3 -4.4 3.9 -5.2 3.8 C-5.9 3.3 -6.3 2.4 -6.5 1.4 Z" fill="#3A2216"/>
+        <ellipse cx="-1.5" cy="0.8" rx="1.35" ry="1.95" fill="#D9A57C" stroke="#BE8A63" stroke-width=".4"/>
+        <path d="M-1.8 -0.1 q1 .5 .3 2" fill="none" stroke="#BE8A63" stroke-width=".35" stroke-linecap="round"/>
+        <path d="M2.6 -2.5 Q3.8 -3.1 5 -2.5" fill="none" stroke="#1F1410" stroke-width=".65" stroke-linecap="round"/>
+        <ellipse cx="3.7" cy="-0.8" rx=".8" ry=".95" fill="#2a1a14"/>
+        <circle cx="3.95" cy="-1.1" r=".26" fill="#fff"/>
+        <path d="M3.4 3.6 q1.1 .7 2 .05" fill="none" stroke="#8A4B3A" stroke-width=".6" stroke-linecap="round"/>
+      </g>
       </g>
     </g>
 
@@ -269,7 +319,7 @@
       <line id="fRF" stroke="#E0AC82" stroke-width="3.5" stroke-linecap="round"/>
       <circle id="fRH" r="2.1" fill="#E0AC82"/>
       <!-- torso -->
-      <rect x="-6.9" y="-24.6" width="13.8" height="2.6" rx="1" fill="#17224A"/>
+      <rect x="-6.9" y="-24.6" width="13.8" height="2.6" rx="1" fill="#2A2F3D"/>
       <rect x="-1.4" y="-24.5" width="2.8" height="2.4" rx=".4" fill="#D8C486"/>
       <path d="M-7.6 -36.6 Q-7.7 -38.7 -5 -38.8 L5 -38.8 Q7.7 -38.7 7.6 -36.6 L6.9 -24 L-6.9 -24 Z" fill="url(#gShirt)" stroke="#C3CAD8" stroke-width=".4"/>
       <polygon points="-2.8,-38.8 0,-35.6 2.8,-38.8" fill="#EEF1F7" stroke="#C3CAD8" stroke-width=".4"/>
@@ -279,480 +329,9 @@
       <ellipse cx="-5.1" cy="-46" rx="1.2" ry="1.7" fill="#C99A73"/>
       <ellipse cx="5.1" cy="-46" rx="1.2" ry="1.7" fill="#C99A73"/>
       <ellipse cx="0" cy="-46.2" rx="5.2" ry="5.9" fill="url(#gSkin)"/>
-      <path d="M-5.5 -47 Q-5.8 -53.4 0 -53.2 Q5.8 -53.4 5.5 -47 Q3.2 -50.4 0 -50.2 Q-3.2 -50.4 -5.5 -47 Z" fill="#1F1410"/>
-      <path d="M-5.5 -48.2 L-4 -48.4 L-4.2 -44.8 Q-4.9 -44.4 -5.3 -45 Z" fill="#1F1410"/>
-      <path d="M5.5 -48.2 L4 -48.4 L4.2 -44.8 Q4.9 -44.4 5.3 -45 Z" fill="#1F1410"/>
+      <path d="M-5.5 -47 Q-5.8 -53.4 0 -53.2 Q5.8 -53.4 5.5 -47 Q3.2 -50.4 0 -50.2 Q-3.2 -50.4 -5.5 -47 Z" fill="#3A2216"/>
+      <path d="M-5.5 -48.2 L-4 -48.4 L-4.2 -44.8 Q-4.9 -44.4 -5.3 -45 Z" fill="#3A2216"/>
+      <path d="M5.5 -48.2 L4 -48.4 L4.2 -44.8 Q4.9 -44.4 5.3 -45 Z" fill="#3A2216"/>
       <circle cx="-2" cy="-46.4" r=".7" fill="#2a1a14"/>
       <circle cx="2" cy="-46.4" r=".7" fill="#2a1a14"/>
-      <line x1="-3.1" y1="-48" x2="-1" y2="-48.3" stroke="#1F1410" stroke-width=".6" stroke-linecap="round"/>
-      <line x1="1" y1="-48.3" x2="3.1" y2="-48" stroke="#1F1410" stroke-width=".6" stroke-linecap="round"/>
-      <path d="M0 -46 q-.7 1.6 .2 2" fill="none" stroke="#BE8A63" stroke-width=".5" stroke-linecap="round"/>
-      <path d="M-2.2 -43 Q0 -41.2 2.2 -43" fill="none" stroke="#8A4B3A" stroke-width=".7" stroke-linecap="round"/>
-      <!-- graduation cap -->
-      <g id="cap">
-        <path d="M-5.7 -53 L-5.7 -50.4 Q0 -48.4 5.7 -50.4 L5.7 -53 Z" fill="#222"/>
-        <polygon points="-11,-53.4 0,-57.4 11,-53.4 0,-49.6" fill="#141414"/>
-        <line x1="9" y1="-53.4" x2="9" y2="-46.6" stroke="#FFD60A" stroke-width=".9"/>
-        <circle cx="9" cy="-45.8" r="1.2" fill="#FFD60A"/>
-      </g>
-      <!-- degree (right hand) -->
-      <g id="degree">
-        <rect x="-7.5" y="-2.3" width="15" height="4.6" rx="2.3" fill="#FFF4D6" stroke="#E0B84C" stroke-width=".7"/>
-        <rect x="-1.4" y="-2.3" width="2.8" height="4.6" fill="#D62839"/>
-        <circle cx="-7.2" cy="0" r="1.9" fill="#F3E3B3" stroke="#E0B84C" stroke-width=".5"/>
-        <circle cx="7.2" cy="0" r="1.9" fill="#F3E3B3" stroke="#E0B84C" stroke-width=".5"/>
-      </g>
-      <!-- money (left hand) -->
-      <g id="money">
-        <rect x="-7" y="-3.6" width="14" height="8" rx="1.2" fill="#1E7A3C"/>
-        <rect x="-7" y="-4.8" width="14" height="8" rx="1.2" fill="#2E9E4F" stroke="#1E7A3C" stroke-width=".6"/>
-        <rect x="-1.4" y="-4.8" width="2.8" height="8" fill="#FFD60A"/>
-        <text x="-5.4" y="0.6" font-size="4.6" font-weight="800" fill="#fff" font-family="Poppins, system-ui, sans-serif">₹</text>
-        <text x="2.4" y="0.6" font-size="4.6" font-weight="800" fill="#fff" font-family="Poppins, system-ui, sans-serif">₹</text>
-      </g>
-    </g>
-
-    <!-- bag that drops away at the top -->
-    <use id="bagFall" href="#bagShape" style="display:none"/>
-
-    <!-- dialogue box above the student -->
-    <g id="bubble" style="display:none">
-      <rect x="198" y="-38" width="138" height="38" rx="12" fill="#fff" stroke="#FFD60A" stroke-width="1.6"/>
-      <path d="M303 -0.6 L315 22 L327 -0.6" fill="#fff" stroke="#FFD60A" stroke-width="1.6" stroke-linejoin="round"/>
-      <rect x="304.5" y="-2.2" width="21" height="3.4" fill="#fff"/>
-      <text x="267" y="-21" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">Thank you for</text>
-      <text x="267" y="-7" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="11.5" fill="#7209B7">helping me Climb</text>
-    </g>
-  </svg>
-
-  <div class="slot"><button class="soon" id="tapBtn" type="button">Click to Climb</button></div>
-</main>
-
-<script>
-(function(){
-  var $ = function(id){ return document.getElementById(id); };
-  var clamp = function(v,a,b){ return Math.max(a, Math.min(b, v)); };
-  var lerp  = function(a,b,t){ return a + (b-a)*t; };
-  var sm    = function(t){ t = clamp(t,0,1); return t*t*(3-2*t); };
-
-  /* ---------- stairs: 5 colours, 2 low steps each ---------- */
-  var colours = ['#FF4D6D','#FF9F1C','#FFD60A','#3DDC84','#4CC9F0'];
-  var NS = 'http://www.w3.org/2000/svg';
-  var stairs = $('stairs');
-  for (var k = 1; k <= 10; k++){
-    var r = document.createElementNS(NS,'rect');
-    r.setAttribute('class','step');
-    r.setAttribute('x', 30 + 30*(k-1));
-    r.setAttribute('y', 200 - 9*k);
-    r.setAttribute('width', 30);
-    r.setAttribute('height', 9*k);
-    r.setAttribute('fill', colours[Math.ceil(k/2)-1]);
-    r.setAttribute('stroke', 'rgba(20,0,60,.22)');
-    r.setAttribute('stroke-width', '.8');
-    r.style.animationDelay = (0.04*k) + 's';
-    stairs.appendChild(r);
-    var h = document.createElementNS(NS,'rect');
-    h.setAttribute('x', 30 + 30*(k-1));
-    h.setAttribute('y', 200 - 9*k);
-    h.setAttribute('width', 30);
-    h.setAttribute('height', 1.6);
-    h.setAttribute('fill', 'rgba(255,255,255,.4)');
-    h.setAttribute('class','step');
-    h.style.animationDelay = (0.04*k) + 's';
-    stairs.appendChild(h);
-  }
-
-  /* ---------- geometry ---------- */
-  var SC = 1.2;
-  var L1 = 16, L2 = 16, ANK = 3.6, HH = 34.6, TORSO = 16, NECK = 5.4;
-  var AU = 10.6, AF = 10;
-  var N = 21, STAIRS = 10, SPEED = 2.5;   /* half-steps per second: one tap = 2 half-steps = 1 stair */
-  var TURN = 0.45, CELEB = 5.0;           /* seconds */
-  var CX = 315, TOP_Y = 110;
-
-  function X(n){ return 7.5 + 15*n; }
-  function Yg(x){
-    if (x < 30) return 200;
-    var k = Math.min(10, Math.floor((x-30)/30) + 1);
-    return 200 - 9*k;
-  }
-  function line(e,x1,y1,x2,y2){
-    e.setAttribute('x1',x1); e.setAttribute('y1',y1);
-    e.setAttribute('x2',x2); e.setAttribute('y2',y2);
-  }
-  function legIK(hx,hy,fx,fy){
-    var ax = fx, ay = fy - ANK;
-    var dx = ax - hx, dy = ay - hy;
-    var d = Math.sqrt(dx*dx + dy*dy), maxd = L1 + L2 - 0.05;
-    if (d > maxd){ var s = maxd/d; dx *= s; dy *= s; d = maxd; }
-    var a = Math.atan2(dy,dx);
-    var A = Math.acos(clamp((L1*L1 + d*d - L2*L2)/(2*L1*d), -1, 1));
-    return { kx: hx + L1*Math.cos(a-A), ky: hy + L1*Math.sin(a-A), ax: hx+dx, ay: hy+dy };
-  }
-  function armPose(sx,sy,th,flex){
-    var ex = sx + Math.sin(th)*AU,  ey = sy + Math.cos(th)*AU;
-    var t2 = th + flex;
-    return { ex:ex, ey:ey, hx: ex + Math.sin(t2)*AF, hy: ey + Math.cos(t2)*AF };
-  }
-
-  var side = $('side'), front = $('front'), bagFall = $('bagFall'), bagA = $('bagA');
-
-  /* ---------- side view: foot-by-foot climbing ---------- */
-  function sidePose(prog){
-    var i = Math.min(N, Math.floor(prog) + 1);
-    var u = clamp(prog - (i-1), 0, 1);
-    var xa = X(i-2), xb = X(i-1), xc = X(i);
-    var ya = Yg(xa), yb = Yg(xb), yc = Yg(xc);
-
-    var sx = lerp(xa, xc, sm(u));
-    var baseY = lerp(ya, yc, sm((u-0.1)/0.5));
-    var sy = baseY - (yc < ya ? 8 : 4.5)*Math.sin(Math.PI*u);
-    var aSwings = (i % 2 === 1);
-    var A = aSwings ? {x:sx, y:sy} : {x:xb, y:yb};
-    var B = aSwings ? {x:xb, y:yb} : {x:sx, y:sy};
-
-    var hx = lerp((xa+xb)/2, (xb+xc)/2, u);
-    /* hip height follows the stance foot: it rises (leg straightens) while that foot is on a higher step */
-    var hy = lerp(ya, yb, sm(u)) - HH - 0.8*Math.sin(Math.PI*u);
-    var lean = 0.04 + 0.04*Math.sin(Math.PI*u);
-    var up = {x: Math.sin(lean), y: -Math.cos(lean)};
-    var back = {x: -Math.cos(lean), y: -Math.sin(lean)};
-
-    /* legs */
-    var lN = legIK(hx,hy,A.x,A.y), lF = legIK(hx,hy,B.x,B.y);
-    line($('nlT'), hx,hy, lN.kx,lN.ky); line($('nlS'), lN.kx,lN.ky, lN.ax,lN.ay);
-    line($('flT'), hx,hy, lF.kx,lF.ky); line($('flS'), lF.kx,lF.ky, lF.ax,lF.ay);
-    var tiltA = aSwings ? -16*Math.sin(Math.PI*u) : 0;
-    var tiltB = aSwings ? 0 : -16*Math.sin(Math.PI*u);
-    $('nlShoe').setAttribute('transform','translate('+lN.ax+' '+(lN.ay+ANK)+') rotate('+tiltA+')');
-    $('flShoe').setAttribute('transform','translate('+lF.ax+' '+(lF.ay+ANK)+') rotate('+tiltB+')');
-
-    /* torso, neck, head */
-    var Hx = hx, Hy = hy;
-    var Sx = Hx + up.x*TORSO, Sy = Hy + up.y*TORSO;
-    $('waist').setAttribute('transform','translate('+Hx+' '+Hy+') rotate('+(lean*180/Math.PI)+')');
-    /* shirt ends just above the shoulder line; neck and collar sit on top of it */
-    var Tx = Sx - up.x*3.5, Ty = Sy - up.y*3.5;
-    line($('tsO'), Hx+up.x*1.5, Hy+up.y*1.5, Tx, Ty);
-    line($('ts'),  Hx+up.x*1.5, Hy+up.y*1.5, Tx, Ty);
-    var Nx = Sx + up.x*NECK, Ny = Sy + up.y*NECK;
-    line($('neck'), Sx,Sy, Nx,Ny);
-    var Kx = Sx + up.x*1.6, Ky = Sy + up.y*1.6;
-    line($('colO'), Kx+back.x*3.8, Ky+back.y*3.8, Kx-back.x*3.8, Ky-back.y*3.8);
-    line($('col'),  Kx+back.x*3.6, Ky+back.y*3.6, Kx-back.x*3.6, Ky-back.y*3.6);
-    var Cx = Nx + up.x*5.2 + 1.4, Cy = Ny + up.y*5.2 - 0.2;
-    $('hd').setAttribute('transform','translate('+Cx+' '+Cy+') rotate(-3)');
-
-    /* arms swing opposite to the legs */
-    var phase = clamp((A.x - B.x)/15, -1.3, 1.3);
-    var thN = -0.5*phase, thF = 0.5*phase;
-    var aN = armPose(Sx,Sy, thN, 0.2 + 0.35*Math.max(0,thN));
-    var aF = armPose(Sx,Sy, thF, 0.2 + 0.35*Math.max(0,thF));
-    line($('naU'), Sx,Sy, aN.ex,aN.ey); line($('naF'), aN.ex,aN.ey, aN.hx,aN.hy);
-    $('naH').setAttribute('cx',aN.hx); $('naH').setAttribute('cy',aN.hy);
-    line($('faU'), Sx,Sy, aF.ex,aF.ey); line($('faF'), aF.ex,aF.ey, aF.hx,aF.hy);
-    $('faH').setAttribute('cx',aF.hx); $('faH').setAttribute('cy',aF.hy);
-
-    /* school bag on the back */
-    var bx = Hx + up.x*8.8 + back.x*7.6, by = Hy + up.y*8.8 + back.y*7.6;
-    var rot = lean*180/Math.PI;
-    bagA.setAttribute('transform','translate('+bx+' '+by+') rotate('+rot+')');
-    return { x:bx, y:by, rot:rot };
-  }
-
-  /* ---------- front view: celebration (c2 = seconds since celebration began) ---------- */
-  function frontPose(c2, still){
-    var k = sm(c2/0.4);
-    var wob = (c2 > 0.4 && !still) ? 1.1*Math.sin(c2*14) : 0;
-    var sides = [['L',-1],['R',1]];
-    for (var q = 0; q < 2; q++){
-      var id = sides[q][0], s = sides[q][1];
-      var shx = s*7.2, shy = -37;
-      var elx = lerp(s*8.8, s*12.8, k), ely = lerp(-28.5, -46.5, k);
-      var hnx = lerp(s*9.4, s*14.8, k), hny = lerp(-20, -56.5, k) + (s>0 ? wob : -wob)*k;
-      line($('f'+id+'U'), shx,shy, elx,ely);
-      line($('f'+id+'F'), elx,ely, hnx,hny);
-      $('f'+id+'H').setAttribute('cx',hnx); $('f'+id+'H').setAttribute('cy',hny);
-      /* after a right turn his right hand (degree) is on our left, left hand (money) on our right */
-      var item = (id === 'L') ? $('degree') : $('money');
-      var rotI = (id === 'L') ? -22 : 20;
-      var sc = clamp(k*3, 0, 1);
-      item.setAttribute('transform','translate('+hnx+' '+(hny-2.6)+') rotate('+rotI+') scale('+sc+')');
-    }
-    var capOff = -26, capOp = 0;
-    if (c2 >= 0.25){
-      capOp = 1;
-      var p = (c2-0.25)/0.35;
-      capOff = p < 1 ? -26*(1 - sm(p)) : 0;
-    }
-    $('cap').setAttribute('transform','translate(0 '+capOff+')');
-    $('cap').setAttribute('opacity', capOp);
-    var hop = 0;
-    if (!still){
-      if (c2 >= 0.6){
-        var ph = ((c2 - 0.6) % 0.5) / 0.35;      /* a hop every half second */
-        if (ph < 1) hop = -7*Math.sin(Math.PI*ph);
-      }
-    }
-    return hop;
-  }
-
-  var bubble = $('bubble');
-  function backOut(t){ t = clamp(t,0,1) - 1; return 1 + 2.70158*t*t*t + 1.70158*t*t; }
-
-  /* ---------- renderers ---------- */
-  function renderClimb(prog){
-    sidePose(prog);
-    side.style.display = '';
-    side.removeAttribute('transform');
-    side.removeAttribute('opacity');
-    bagA.style.display = '';
-    front.style.display = 'none';
-    bagFall.style.display = 'none';
-    bubble.style.display = 'none';
-  }
-
-  /* c = seconds since he reached the top */
-  function renderCelebrate(c, still){
-    var b = sidePose(N);                 /* final climbing pose */
-
-    /* bag falls off and fades */
-    var g = 180, vx = -22, vy = -10, LAND = 113;
-    var tl = (-vy + Math.sqrt(vy*vy - 2*g*(b.y - LAND)))/g;
-    var tc = Math.min(c, tl);
-    var px = b.x + vx*tc, py = b.y + vy*tc + 0.5*g*tc*tc, pr = b.rot + 160*tc;
-    var bo = 1 - clamp((c - tl - 0.4)/0.5, 0, 1);
-    bagFall.style.display = bo > 0 ? '' : 'none';
-    bagFall.setAttribute('transform','translate('+px+' '+py+') rotate('+pr+')');
-    bagFall.setAttribute('opacity', bo);
-    bagA.style.display = 'none';
-
-    /* turn to face the viewer (same turn and speed as the original) */
-    if (c < 0.3){
-      var sx = 1 - sm(c/0.3);
-      side.style.display = '';
-      side.setAttribute('transform','translate('+CX+' 0) scale('+Math.max(sx,0.02)+' 1) translate('+(-CX)+' 0)');
-    } else {
-      side.style.display = 'none';
-    }
-
-    var c2 = Math.max(0, c - TURN);
-    var hop = frontPose(c2, still);
-    if (c >= 0.15){
-      var fx = sm((c-0.15)/0.3);
-      front.style.display = '';
-      front.setAttribute('transform','translate('+CX+' '+(TOP_Y + hop)+') scale('+(SC*Math.max(fx,0.02))+' '+SC+')');
-    } else {
-      front.style.display = 'none';
-    }
-
-    /* dialogue box appears as the celebration starts */
-    if (c >= TURN){
-      var bs = still ? 1 : Math.max(backOut(c2/0.3), 0.01);
-      bubble.style.display = '';
-      bubble.setAttribute('transform','translate(315 22) scale('+bs+') translate(-315 -22)');
-    } else {
-      bubble.style.display = 'none';
-    }
-  }
-
-  /* ---------- soft sounds (Web Audio, created on the first click) ---------- */
-  var AC = window.AudioContext || window.webkitAudioContext;
-  var ctx = null, master = null, bus = null, mus = null, muted = false;
-  var SCALE = [261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,783.99,880.00]; /* C major pentatonic, one note per stair */
-  function audioInit(){
-    if (!AC) return;
-    if (!ctx){
-      ctx = new AC();
-      master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9;
-      bus = ctx.createGain();
-      var dly = ctx.createDelay(1); dly.delayTime.value = 0.24;
-      var fb = ctx.createGain(); fb.gain.value = 0.3;
-      var wet = ctx.createGain(); wet.gain.value = 0.3;
-      var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400;
-      bus.connect(master); bus.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); lp.connect(wet); wet.connect(master);
-      master.connect(ctx.destination);
-    }
-    if (ctx.state === 'suspended') ctx.resume();
-  }
-  /* one soft note: attack, then a long smooth fade; optional harmonics for a warm / bell-like colour */
-  function tone(freq, t0, dur, vol, out, partials){
-    var parts = partials || [[1,1,'sine'],[2,0.18,'sine']];
-    for (var i = 0; i < parts.length; i++){
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      o.type = parts[i][2]; o.frequency.value = freq*parts[i][0];
-      var v = vol*parts[i][1];
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.linearRampToValueAtTime(v, t0 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      o.connect(g); g.connect(out || bus);
-      o.start(t0); o.stop(t0 + dur + 0.05);
-    }
-  }
-  /* one smooth, gently rising loudness from the first stair to the top; the same tone recipe on every stair so there is no jump */
-  var STAIR_VOL = [0.352, 0.321, 0.295, 0.26, 0.243, 0.219, 0.207, 0.197, 0.185, 0.179];
-  var STAIR_PARTS = [[1,1,'sine'],[2,0.3,'sine'],[3,0.1,'sine']];
-  function stairTone(n){
-    if (!ctx) return;
-    var i = clamp(n-1, 0, SCALE.length-1);
-    tone(SCALE[i], ctx.currentTime + 0.01, 1.1, STAIR_VOL[i], bus, STAIR_PARTS);
-  }
-  var BELL = [[1,1,'sine'],[2.76,0.22,'sine'],[5.4,0.06,'sine']];
-  function chime(){                                  /* celebration chime: a soft rising sparkle */
-    if (!ctx) return;
-    var t = ctx.currentTime + 0.02, notes = [523.25,659.25,783.99,1046.5,1318.5];
-    for (var i = 0; i < notes.length; i++) tone(notes[i], t + i*0.09, 1.5, 0.11, bus, BELL);
-  }
-  var CHORDS = [[130.81,261.63,329.63,392.00],[110.00,261.63,329.63,440.00],[174.61,261.63,349.23,440.00],[98.00,246.94,293.66,392.00]];
-  var ARP    = [[659.25,783.99,1046.5,783.99],[659.25,880.00,1046.5,880.00],[698.46,880.00,1046.5,880.00],[587.33,783.99,987.77,783.99]];
-  function music(){                                  /* ~5 s of soft pads and a gentle bell arpeggio (C - Am - F - G) */
-    if (!ctx) return;
-    stopMusic(true);
-    var t0 = ctx.currentTime + 0.03, bar = 1.2;
-    mus = ctx.createGain(); mus.gain.setValueAtTime(1, t0);
-    mus.gain.setValueAtTime(1, t0 + CELEB - 0.8);
-    mus.gain.linearRampToValueAtTime(0.0001, t0 + CELEB - 0.05);
-    mus.connect(bus);
-    for (var k = 0; k < 4; k++){
-      var ch = CHORDS[k], bt = t0 + k*bar;
-      for (var j = 0; j < ch.length; j++){
-        var o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = (j === 0) ? 'triangle' : 'sine'; o.frequency.value = ch[j];
-        var v = (j === 0) ? 0.05 : 0.032;
-        g.gain.setValueAtTime(0.0001, bt);
-        g.gain.linearRampToValueAtTime(v, bt + 0.3);
-        g.gain.linearRampToValueAtTime(v*0.7, bt + bar - 0.15);
-        g.gain.linearRampToValueAtTime(0.0001, bt + bar + 0.25);
-        o.connect(g); g.connect(mus); o.start(bt); o.stop(bt + bar + 0.3);
-      }
-      for (var m = 0; m < 4; m++) tone(ARP[k][m], bt + m*0.3, 0.9, 0.06, mus, BELL);
-    }
-  }
-  function stopMusic(instant){
-    if (!mus || !ctx) return;
-    var t = ctx.currentTime, m = mus; mus = null;
-    m.gain.cancelScheduledValues(t);
-    m.gain.setValueAtTime(m.gain.value, t);
-    m.gain.linearRampToValueAtTime(0.0001, t + (instant ? 0.05 : 0.25));
-  }
-  /* ---------- flower rain over the whole screen ---------- */
-  var cvs = $('rain'), g2 = cvs.getContext('2d'), flowers = [], spawnAcc = 0, vw = 0, vh = 0, hasRain = false;
-  var PAL = [['#FF6FB5','#FFD60A'],['#FFFFFF','#FFB703'],['#FFC2E2','#FF8FA3'],['#FFE066','#FF8A1F'],['#C9A7FF','#FFE066'],['#FF8FAB','#FFF3B0'],['#9BE7FF','#FFE066']];
-  function sizeRain(){
-    var d = Math.min(window.devicePixelRatio || 1, 2);
-    vw = window.innerWidth; vh = window.innerHeight;
-    cvs.width = Math.round(vw*d); cvs.height = Math.round(vh*d);
-    g2.setTransform(d,0,0,d,0,0);
-  }
-  window.addEventListener('resize', sizeRain); sizeRain();
-  function drawFlower(f){
-    g2.save(); g2.translate(f.x, f.y); g2.rotate(f.rot);
-    g2.fillStyle = f.pal[0];
-    for (var k = 0; k < 5; k++){
-      g2.save(); g2.rotate(k*Math.PI*2/5);
-      g2.beginPath(); g2.ellipse(0, -f.s*0.55, f.s*0.36, f.s*0.55, 0, 0, Math.PI*2); g2.fill();
-      g2.restore();
-    }
-    g2.fillStyle = f.pal[1];
-    g2.beginPath(); g2.arc(0, 0, f.s*0.27, 0, Math.PI*2); g2.fill();
-    g2.restore();
-  }
-  function rainStep(dt, c2){                         /* c2 = seconds since the celebration began */
-    var spawning = c2 < CELEB - 0.9;
-    if (spawning){
-      spawnAcc += dt*26;
-      while (spawnAcc >= 1){
-        spawnAcc -= 1;
-        var s = 9 + Math.random()*13, x0 = Math.random()*vw;
-        flowers.push({x:x0, x0:x0, y:-24, s:s, vy:150 + Math.random()*140, t:Math.random()*6, sw:14 + Math.random()*28,
-                      sf:1 + Math.random()*1.6, rot:Math.random()*6.28, vr:(Math.random()-.5)*3,
-                      pal:PAL[Math.floor(Math.random()*PAL.length)]});
-      }
-    }
-    g2.clearRect(0, 0, vw, vh);
-    var alpha = clamp((CELEB - c2)/0.6, 0, 1);
-    g2.globalAlpha = alpha;
-    for (var i = flowers.length - 1; i >= 0; i--){
-      var f = flowers[i];
-      f.y += f.vy*dt; f.t += dt; f.rot += f.vr*dt; f.x = f.x0 + Math.sin(f.t*f.sf)*f.sw;
-      if (f.y > vh + 30){ flowers.splice(i,1); continue; }
-      drawFlower(f);
-    }
-    g2.globalAlpha = 1;
-    hasRain = true;
-  }
-  function rainClear(){
-    flowers.length = 0; spawnAcc = 0;
-    if (hasRain){ g2.clearRect(0, 0, vw, vh); hasRain = false; }
-  }
-
-  /* ---------- state machine ---------- */
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var btn = $('tapBtn');
-  var state = 'climb';          /* 'climb' | 'celebrate' */
-  var stairsDone = 0, prog = 0, target = 0, cStart = 0, soonOn = false, last = null, musicOn = false;
-
-  btn.addEventListener('click', function(){
-    audioInit();
-    if (state !== 'climb' || stairsDone >= STAIRS) return;
-    stairsDone++;
-    stairTone(stairsDone);
-    target = stairsDone < STAIRS ? 2*stairsDone : N;   /* last tap also walks him to the centre of the top step */
-  });
-
-  function resetAll(){
-    state = 'climb'; stairsDone = 0; prog = 0; target = 0; soonOn = false;
-    btn.textContent = 'Click to Climb';
-    btn.classList.remove('gold');
-    musicOn = false; stopMusic(true); rainClear();
-    renderClimb(0);
-  }
-
-  function tick(now){
-    var dt = last === null ? 0 : Math.min((now - last)/1000, 0.05);
-    last = now;
-
-    if (state === 'climb'){
-      if (prog < target) prog = reduce ? target : Math.min(target, prog + SPEED*dt);
-      renderClimb(prog);
-      if (prog >= N - 1e-6){ state = 'celebrate'; cStart = now; soonOn = false; musicOn = false; chime(); }
-    } else {
-      var c = (now - cStart)/1000;
-      if (c >= TURN + CELEB){
-        resetAll();                                    /* exactly 5 s after "Coming Soon" began */
-      } else {
-        if (c >= TURN && !soonOn){
-          soonOn = true;
-          btn.innerHTML = '<span class="cs"><span class="cs-t">Coming Soon</span></span>';
-          btn.classList.add('gold');
-        }
-        if (c >= TURN && !musicOn){ musicOn = true; music(); }
-        if (c >= TURN && !reduce) rainStep(dt, c - TURN);
-        renderCelebrate(reduce ? TURN + 0.65 : c, reduce);
-      }
-    }
-    requestAnimationFrame(tick);
-  }
-
-  resetAll();
-  requestAnimationFrame(tick);
-})();
-</script>
-<script>
-/* keep the tagline rule always a little longer than the rule under MARXO */
-(function(){
-  var h1=document.querySelector('h1'), tg=document.querySelector('.tagline'), main=document.querySelector('main');
-  function fit(){
-    tg.style.minWidth='';
-    var need=h1.getBoundingClientRect().width*1.08;
-    if(tg.getBoundingClientRect().width<need) tg.style.minWidth=Math.min(need,main.clientWidth)+'px';
-    /* let the tagline rule reach a little beyond the words on both sides (stays inside the screen) */
-    var tw=tg.getBoundingClientRect().width, vw=document.documentElement.clientWidth;
-    tg.style.setProperty('--ext',Math.max(0,Math.min(tw*0.08,(vw-tw)/2-8))+'px');
-  }
-  fit(); window.addEventListener('resize',fit); window.addEventListener('load',fit);
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fit);
-})();
-</script>
-</body>
-</html>
+      <line x1="-3.1" y1="-48" x2="-1
