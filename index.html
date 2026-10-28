@@ -37,12 +37,12 @@
     position:relative;
     display:table;
     margin:0 auto 0;
-    padding:0 0 0 .16em;               /* balances the letter-spacing after the last letter */
+    padding:0 0 0 .06em;               /* balances the letter-spacing after the last letter */
     font-family:'Noto Serif',Georgia,'Times New Roman',serif;
     font-weight:700;
     font-size:clamp(2.6rem,min(19vw,12vh),8rem);
     line-height:1;
-    letter-spacing:.16em;
+    letter-spacing:.06em;
     /* gold like the app: lighter at the top, deeper at the bottom */
     background:linear-gradient(180deg,#F6DC8C 0%,#E2BC5E 50%,#C79A3C 100%);
     -webkit-background-clip:text;background-clip:text;
@@ -156,7 +156,7 @@
   #side,#front{filter:drop-shadow(0 0 .6px rgba(255,255,255,.95)) drop-shadow(0 0 2.2px rgba(170,190,255,.45))}
   /* ™ sits just after the O, without pushing MARXO off-centre */
   .tm{
-    position:absolute;left:calc(100% - .42em);top:.32em;
+    position:absolute;left:calc(100% - .16em);top:.32em;
     font-family:'Poppins',system-ui,sans-serif;font-weight:600;
     font-size:.42em;letter-spacing:0;line-height:1;
     color:#E2BC5E;-webkit-text-fill-color:#E2BC5E;
@@ -859,26 +859,33 @@
 (function(){
   var h1=document.querySelector('h1'), tg=document.querySelector('.tagline'), main=document.querySelector('main');
   var wl=document.querySelector('.welcome');
+  /* width of the letters T…M of the tagline compared to the whole tagline (same at any font size) */
+  function ratioTM(){
+    var tn=tg.firstChild, txt=tn.nodeValue, r=document.createRange();
+    function box(i){ r.setStart(tn,i); r.setEnd(tn,i+1); return r.getBoundingClientRect(); }
+    var first=box(0), last=box(txt.length-1), t=box(1), m=box(txt.length-2);
+    var full=last.right-first.left, tm=m.right-t.left;
+    return { full:full, tm:tm, ls:parseFloat(getComputedStyle(tg).letterSpacing)||0 };
+  }
+  function place(hf, hw){
+    wl.style.fontSize=Math.max(11,hf*0.19)+'px';      /* "Welcome to" grows with MARXO */
+    /* T of STEPWISE starts and M of SYSTEMS ends 5% outside MARXO; the outer S letters stick out beyond that */
+    var V=(hw-0.12*hf)*1.1;
+    tg.style.fontSize='';
+    var fs=parseFloat(getComputedStyle(tg).fontSize), q=ratioTM();
+    var tmPerPx=(q.tm)/fs;                              /* T…M span per px of font size */
+    tg.style.fontSize=(V/tmPerPx)+'px';
+  }
   function size(){
     h1.style.fontSize=''; tg.style.fontSize='';
     var room=main.clientWidth-4;
-    /* if the wide tagline would not fit, shrink MARXO so the proportions stay the same */
     var hw=h1.getBoundingClientRect().width, hf=parseFloat(getComputedStyle(h1).fontSize);
     if(hw>room){ hf=hf*room/hw; h1.style.fontSize=hf+'px'; hw=h1.getBoundingClientRect().width; }
-    wl.style.fontSize=Math.max(11,hf*0.19)+'px';      /* "Welcome to" grows with MARXO */
-    /* the tagline sits under MARXO like a base, sticking out a little on both sides */
-    var V=(hw-0.32*hf)*1.1;                            /* a base: 5% wider than MARXO on each side */
-    var w=tg.getBoundingClientRect().width, fs=parseFloat(getComputedStyle(tg).fontSize);
-    var k=w/fs;                                        /* tagline width per px of font size */
-    if(k>0.4) tg.style.fontSize=(V/(k-0.4))+'px';
-    /* small phones: if the base would touch the screen edge, shrink the whole lock-up together */
-    var tw=tg.getBoundingClientRect().width;
-    if(tw>room && !size.again){ size.again=true; h1.style.fontSize=(hf*room/tw)+'px';
-      hw=h1.getBoundingClientRect().width; hf=parseFloat(h1.style.fontSize);
-      wl.style.fontSize=Math.max(11,hf*0.19)+'px';
-      tg.style.fontSize=''; w=tg.getBoundingClientRect().width; fs=parseFloat(getComputedStyle(tg).fontSize); k=w/fs;
-      tg.style.fontSize=(((hw-0.32*hf)*1.1)/(k-0.4))+'px'; }
-    size.again=false;
+    place(hf,hw);
+    /* small phones: if the tagline would touch the screen edge, shrink the whole lock-up together */
+    var q=ratioTM();
+    var cap=(room-8)*0.88;                             /* tighter MARXO = narrower lock-up, same letter size as before */
+    if(q.full>cap){ hf=hf*cap/q.full; h1.style.fontSize=hf+'px'; hw=h1.getBoundingClientRect().width; place(hf,hw); }
   }
   size(); addEventListener('resize',size); addEventListener('load',size);
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(size);
